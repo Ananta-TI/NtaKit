@@ -1,0 +1,46 @@
+@import "tailwindcss";
+* {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+/* 1. Daftarkan variabel dasar (Default: Dark Mode) di @theme */
+@theme {
+  --color-brand-bg: #2C3639;
+  --color-brand-surface: #374447;
+  --color-brand-accent: #A27B5C;
+  --color-brand-text: #DCD7C9;
+  --color-brand-border: #4B5C5D;
+}
+
+.light {
+  --color-brand-bg: #F8F6F1;
+  --color-brand-surface: #ECE8DC;
+  --color-brand-accent: #8B5E3C;
+  --color-brand-text: #2C3639;
+  --color-brand-border: #D7D0BE;
+}
+
+/* 3. Setup dasar body */
+:root {
+  background-color: var(--color-brand-bg);
+  color: var(--color-brand-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.code-container {
+  will-change: max-height;
+  transform: translateZ(0); /* Maksa GPU buat kerja */
+}
+
+.shiki-container pre {
+  background-color: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: auto;
+}
+
+.shiki-container code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+}
