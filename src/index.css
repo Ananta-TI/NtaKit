@@ -1,11 +1,14 @@
 @import "tailwindcss";
+
+/* 1. Reset & Global Transition */
 * {
-  transition:
-    background-color 0.25s ease,
-    border-color 0.25s ease,
-    color 0.25s ease;
+  /* Hapus transition dari * agar tidak lag, fokus ke property tertentu saja */
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
 }
-/* 1. Daftarkan variabel dasar (Default: Dark Mode) di @theme */
+
+/* 2. Daftarkan variabel premium di @theme (Default: Dark Mode) */
 @theme {
   --color-brand-bg: #2C3639;
   --color-brand-surface: #374447;
@@ -22,25 +25,68 @@
   --color-brand-border: #D7D0BE;
 }
 
-/* 3. Setup dasar body */
+/* 4. Base Styles */
 :root {
   background-color: var(--color-brand-bg);
   color: var(--color-brand-text);
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.code-container {
-  will-change: max-height;
-  transform: translateZ(0); /* Maksa GPU buat kerja */
+/* Scrollbar biar gak ngerusak estetika */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-border);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-accent);
 }
 
+/* Container Code tetap gelap meski light mode (biar kontras) */
+/* CSS untuk Line Numbers di Shiki Container */
 .shiki-container pre {
   background-color: transparent !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow-x: auto;
+  counter-reset: step;
+  counter-increment: step 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .shiki-container code {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  display: grid;
+}
+
+.shiki-container .line {
+  display: inline-block;
+  min-height: 1.5rem;
+  padding-left: 3.5rem; /* Space untuk angka */
+  position: relative;
+}
+
+/* Munculkan Angka Baris */
+.shiki-container .line::before {
+  content: counter(step);
+  counter-increment: step;
+  position: absolute;
+  left: 0;
+  width: 2.5rem; /* Lebar kolom angka */
+  text-align: right;
+  color: rgba(255, 255, 255, 0.15); /* Warna angka (redup ala VS Code) */
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 11px;
+  user-select: none; /* Biar angka nggak ikut ke-copy */
+  padding-right: 1rem;
+}
+
+/* Efek saat baris di-hover (opsional, biar keren) */
+.shiki-container .line:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.shiki-container .line:hover::before {
+  color: rgba(255, 255, 255, 0.4);
 }

@@ -87,7 +87,10 @@ function formatDateRange(startDate, endDate) {
 /* ─────────────────────────────────────────────
    Main Component
 ───────────────────────────────────────────── */
-export default function GithubIsometric({ username = "Ananta-TI" }) {
+export default function GithubIsometric({ 
+  /** Username GitHub yang data kontribusinya akan divisualisasikan. */
+  username = "Ananta-TI" 
+}) {
   const themeCtx = useContext(ThemeContext);
   const isDarkMode = themeCtx?.isDarkMode ?? true;
 

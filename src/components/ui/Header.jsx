@@ -1,192 +1,67 @@
-import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { ThemeContext } from "../../context/ThemeContext";
-import { Search, Moon, Sun } from "lucide-react";
-import { motion } from "framer-motion";
+import { Search, Moon, Sun, Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { componentRegistry } from "../../registry";
 
 export default function Header() {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+  const location = useLocation();
+  const isComponentPage = location.pathname.startsWith("/components/");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredComponents = Object.entries(componentRegistry).filter(([_, data]) =>
+    data.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <header
-      className={`sticky top-0 z-50 h-20 border-b backdrop-blur-2xl transition-colors duration-300 ${
-        isDarkMode
-          ? "bg-[#09090B]/80 border-white/10 text-white"
-          : "bg-white/80 border-black/10 text-black"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto h-full px-6 md:px-10 flex items-center justify-between">
-
-        {/* LEFT */}
-        <div className="flex items-center gap-10">
-
-          {/* LOGO */}
+    <header className="sticky top-0 z-50 h-20 border-b border-brand-border bg-brand-bg/80 backdrop-blur-xl text-brand-text">
+      <div className="h-full px-6 md:px-10 flex items-center justify-between">
+        <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center gap-3 group">
-            
-            <motion.div
-              whileHover={{
-                rotate: 0,
-                scale: 1.04,
-              }}
-              initial={{
-                rotate: 4,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 18,
-              }}
-              className="relative"
-            >
-              {/* Glow */}
-              <div className="absolute inset-0 bg-[#C6A27E]/30 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
-
-              {/* Logo Card */}
-              <div
-                className={`relative w-11 h-11 rounded-2xl border overflow-hidden flex items-center justify-center shadow-[0_10px_40px_rgba(0,0,0,0.25)] ${
-                  isDarkMode
-                    ? "bg-white/[0.04] border-white/10"
-                    : "bg-black/[0.03] border-black/10"
-                }`}
-              >
-                <img
-                  src={
-                    isDarkMode
-                      ? "/image/logo1.png"
-                      : "/image/logo2.png"
-                  }
-                  alt="NtaKit Logo"
-                  className="w-6 h-6 object-contain transition-transform duration-500 group-hover:scale-110"
-                />
-              </div>
-            </motion.div>
-
-            {/* TEXT */}
-            <span className="text-xl font-semibold tracking-tight">
-              Nta<span className="text-[#C6A27E]">Kit</span>
-            </span>
+            <div className="relative w-11 h-11 rounded-2xl border border-brand-border bg-brand-surface/50 flex items-center justify-center">
+              <img src={isDarkMode ? "/image/logo1.png" : "/image/logo2.png"} alt="Logo" className="w-6 h-6" />
+            </div>
+            <span className="text-xl font-bold">Nta<span className="text-brand-accent">Kit</span></span>
           </Link>
-
-          {/* NAVIGATION */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-            <Link
-              to="/components/github-isometric"
-              className={`transition-colors hover:text-[#C6A27E] ${
-                isDarkMode
-                  ? "text-zinc-400"
-                  : "text-zinc-600"
-              }`}
-            >
-              Components
-            </Link>
-
-            <Link
-              to="/"
-              className={`transition-colors hover:text-[#C6A27E] ${
-                isDarkMode
-                  ? "text-zinc-400"
-                  : "text-zinc-600"
-              }`}
-            >
-              Templates
-            </Link>
-
-            <Link
-              to="/"
-              className={`transition-colors hover:text-[#C6A27E] ${
-                isDarkMode
-                  ? "text-zinc-400"
-                  : "text-zinc-600"
-              }`}
-            >
-              Docs
-            </Link>
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium opacity-70">
+            <Link to="/components/github-isometric" className="hover:text-brand-accent hover:opacity-100 transition-all">Components</Link>
+            <Link to="/" className="hover:text-brand-accent hover:opacity-100 transition-all">Docs</Link>
           </nav>
         </div>
 
-        {/* RIGHT */}
-        <div className="flex items-center gap-3">
-
-          {/* SEARCH */}
-          <div className="hidden lg:flex relative items-center group">
-
-            <Search
-              size={16}
-              className={`absolute left-4 transition-colors ${
-                isDarkMode
-                  ? "text-zinc-500 group-focus-within:text-[#C6A27E]"
-                  : "text-zinc-400 group-focus-within:text-[#C6A27E]"
-              }`}
-            />
-
+        {isComponentPage && (
+          <div className="hidden lg:block flex-1 max-w-md mx-auto relative group">
+            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/30 group-focus-within:text-brand-accent" />
             <input
               type="text"
               placeholder="Search components..."
-              className={`w-72 rounded-2xl pl-11 pr-14 py-3 text-sm outline-none border transition-all ${
-                isDarkMode
-                  ? "bg-white/[0.03] border-white/10 focus:border-[#C6A27E]/50 focus:bg-white/[0.05]"
-                  : "bg-black/[0.03] border-black/10 focus:border-[#C6A27E]/40"
-              }`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setSearchOpen(true)}
+              onBlur={() => setTimeout(() => setSearchOpen(false), 200)}
+              className="w-full rounded-2xl pl-11 pr-4 py-2.5 text-sm outline-none border border-brand-border bg-brand-surface/30 focus:border-brand-accent/50 transition-all"
             />
-
-            {/* KEY */}
-            <div
-              className={`absolute right-3 px-2 py-1 rounded-md border text-[10px] font-bold ${
-                isDarkMode
-                  ? "bg-white/[0.03] border-white/10 text-zinc-500"
-                  : "bg-black/[0.03] border-black/10 text-zinc-400"
-              }`}
-            >
-              ⌘K
-            </div>
+            <AnimatePresence>
+              {searchOpen && searchQuery && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute top-full left-0 right-0 mt-2 rounded-2xl border border-brand-border bg-brand-surface shadow-2xl overflow-hidden">
+                  {filteredComponents.map(([id, data]) => (
+                    <Link key={id} to={`/components/${id}`} className="block px-4 py-3 text-sm hover:bg-brand-accent/10 border-b border-brand-border last:border-0">{data.name}</Link>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
+        )}
 
-          {/* THEME TOGGLE */}
-          <button
-            onClick={toggleTheme}
-            className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all active:scale-95 ${
-              isDarkMode
-                ? "bg-white/[0.03] border-white/10 hover:border-[#C6A27E]/40"
-                : "bg-black/[0.03] border-black/10 hover:border-[#C6A27E]/40"
-            }`}
-          >
-            {isDarkMode ? (
-              <Sun
-                size={18}
-                className="text-[#C6A27E] transition-transform hover:rotate-45"
-              />
-            ) : (
-              <Moon
-                size={18}
-                className="text-zinc-500 transition-transform hover:-rotate-12"
-              />
-            )}
+        <div className="flex items-center gap-3">
+          <button onClick={toggleTheme} className="w-11 h-11 rounded-2xl border border-brand-border bg-brand-surface/50 flex items-center justify-center hover:border-brand-accent transition-all">
+            {isDarkMode ? <Sun size={18} className="text-brand-accent" /> : <Moon size={18} className="text-brand-accent" />}
           </button>
-
-          {/* GITHUB */}
-          <a
-            href="https://github.com/Ananta-TI"
-            target="_blank"
-            rel="noreferrer"
-            className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all active:scale-95 ${
-              isDarkMode
-                ? "bg-white/[0.03] border-white/10 hover:border-[#C6A27E]/40 hover:text-[#C6A27E]"
-                : "bg-black/[0.03] border-black/10 hover:border-[#C6A27E]/40 hover:text-[#C6A27E]"
-            }`}
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.28 1.15-.28 2.35 0 3.5-.73 1.02-1.08 2.25-1 3.5 0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-              <path d="M9 18c-4.51 2-5-2-7-2" />
-            </svg>
+          <a href="https://github.com/Ananta-TI" target="_blank" rel="noreferrer" className="w-11 h-11 rounded-2xl border border-brand-border bg-brand-surface/50 flex items-center justify-center hover:border-brand-accent transition-all text-brand-text">
+            <Sun size={18} />
           </a>
         </div>
       </div>

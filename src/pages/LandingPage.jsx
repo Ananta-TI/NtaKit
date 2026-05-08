@@ -2,162 +2,102 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Box, Layers, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { useContext } from "react";
-
+import Footer from "../components/ui/Footer";
 import { ThemeContext } from "../context/ThemeContext";
 
 export default function LandingPage() {
   const { isDarkMode } = useContext(ThemeContext);
 
+  // Variabel Animasi untuk Staggered Children
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+  };
+
   return (
-    <div className={`min-h-screen transition-colors duration-500 flex flex-col items-center justify-center p-6 relative overflow-hidden ${
-      isDarkMode ? "bg-brand-bg text-brand-text" : "bg-zinc-50 text-zinc-900"
+    <div className={`relative min-h-screen w-full flex flex-col items-center transition-colors duration-500 overflow-x-hidden ${
+      isDarkMode ? "bg-[#2C3639] text-white" : "bg-zinc-50 text-zinc-900"
     }`}>
-      {/* GRID BACKGROUND */}
-      <div
-        className="absolute inset-0 opacity-[0.12]"
-        style={{
-          backgroundImage:
-            "radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
-
-      {/* GLOW */}
-      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#C6A27E]/10 blur-[140px] rounded-full pointer-events-none" />
-
-      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#C6A27E]/5 blur-[120px] rounded-full pointer-events-none" />
-
-      {/* HERO */}
-      <div className="relative z-10 flex flex-col items-center text-center max-w-6xl">
-
-        {/* LOGO */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.7, y: 30 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{
-            duration: 0.8,
-            ease: [0.16, 1, 0.3, 1],
+      
+      {/* 1. BACKGROUND LAYER */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {/* Grid Pattern */}
+        <div 
+          className={`absolute inset-0 opacity-[0.15] ${isDarkMode ? "invert-0" : "invert"}`}
+          style={{
+            backgroundImage: "radial-gradient(circle at 2px 2px, rgba(198,162,126,0.15) 1px, transparent 0)",
+            backgroundSize: "48px 48px",
           }}
-          className="relative mb-10 group"
-        >
-          {/* Glow */}
-          <div className="absolute inset-0 rounded-[32px] bg-[#C6A27E]/20 blur-3xl opacity-40 group-hover:opacity-70 transition-all duration-700" />
+        />
+        
+        {/* Dynamic Glows */}
+        <motion.div 
+          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-[#C6A27E]/20 blur-[120px] rounded-full" 
+        />
+        <motion.div 
+          animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 10, repeat: Infinity, delay: 1 }}
+          className="absolute bottom-[10%] right-[-5%] w-[500px] h-[500px] bg-[#C6A27E]/10 blur-[100px] rounded-full" 
+        />
+      </div>
 
-          {/* Logo Card */}
-          <div
-            className={`relative w-28 h-28 rounded-[32px] border backdrop-blur-2xl flex items-center justify-center overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.55)] ${
-              isDarkMode
-                ? "bg-white/[0.04] border-white/10"
-                : "bg-black/[0.03] border-black/10"
-            }`}
-          >
-            {/* Shine */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] to-transparent" />
-
-            {/* Logo */}
-            <img
-              src={
-                isDarkMode
-                  ? "/image/logo1.png"
-                  : "/image/logo2.png"
-              }
-              alt="NtaKit Logo"
-              className="relative z-10 w-16 h-16 object-contain transition-transform duration-500 group-hover:scale-110"
-            />
-          </div>
-        </motion.div>
-
+      {/* 2. MAIN CONTENT */}
+      <motion.main 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 flex flex-col items-center text-center px-6 pt-32 pb-20 w-full max-w-7xl"
+      >
+        
         {/* BADGE */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <span
-            className={`inline-flex items-center gap-2 px-5 py-2 rounded-full border backdrop-blur-xl text-xs font-bold tracking-[0.25em] uppercase mb-8 ${
-              isDarkMode
-                ? "border-white/10 bg-white/[0.03] text-[#C6A27E]"
-                : "border-black/10 bg-black/[0.03] text-[#9B6B43]"
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-[#C6A27E] animate-pulse" />
-            Beta v1.0 • Built for Developers
+        <motion.div variants={itemVariants} className="mb-8">
+          <span className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-full border backdrop-blur-md text-[10px] font-bold tracking-[0.3em] uppercase ${
+            isDarkMode ? "border-white/10 bg-white/[0.03] text-[#C6A27E]" : "border-black/10 bg-black/[0.03] text-[#9B6B43]"
+          }`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C6A27E] animate-ping" />
+            Beta v1.0 • Built for Modern Web
           </span>
         </motion.div>
 
         {/* TITLE */}
-        <motion.h1
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="text-6xl md:text-8xl font-black tracking-[-0.06em] leading-[0.9] mb-8"
-        >
-          CRAFTED{" "}
-          <span className="text-[#C6A27E]">
+        <motion.h1 variants={itemVariants} className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.95] mb-8">
+          CRAFTED <br />
+          <span className="bg-gradient-to-b from-[#E5C9A9] to-[#C6A27E] bg-clip-text text-transparent">
             PRECISION
-          </span>
+          </span>{" "}
           <br />
           FOR YOUR JSX
         </motion.h1>
 
         {/* DESCRIPTION */}
-        <motion.p
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45 }}
-          className={`max-w-2xl text-lg md:text-xl leading-relaxed mb-14 ${
-            isDarkMode ? "text-zinc-400" : "text-zinc-600"
-          }`}
-        >
-          Koleksi komponen UI modern dan interaktif yang dibangun dengan{" "}
-          <span
-            className={
-              isDarkMode ? "text-white font-medium" : "text-black font-medium"
-            }
-          >
-            React
-          </span>
-          ,{" "}
-          <span
-            className={
-              isDarkMode ? "text-white font-medium" : "text-black font-medium"
-            }
-          >
-            Framer Motion
-          </span>
-          ,{" "}
-          <span
-            className={
-              isDarkMode ? "text-white font-medium" : "text-black font-medium"
-            }
-          >
-            Three.js
-          </span>
-          , dan{" "}
-          <span
-            className={
-              isDarkMode ? "text-white font-medium" : "text-black font-medium"
-            }
-          >
-            Tailwind CSS v4
-          </span>
-          .
+        <motion.p variants={itemVariants} className={`max-w-2xl text-base md:text-lg leading-relaxed mb-12 ${
+          isDarkMode ? "text-zinc-400" : "text-zinc-500"
+        }`}>
+          Koleksi komponen UI premium dengan performa tinggi. Dibangun menggunakan 
+          <span className="text-[#C6A27E] font-semibold"> React</span>, 
+          <span className="text-[#C6A27E] font-semibold"> Framer Motion</span>, 
+          dan <span className="text-[#C6A27E] font-semibold"> Tailwind CSS v4</span> untuk pengalaman develop yang luar biasa.
         </motion.p>
 
-        {/* BUTTONS */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55 }}
-          className="flex flex-col md:flex-row items-center gap-5"
-        >
+        {/* CALL TO ACTIONS */}
+        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-4 mb-32">
           <Link
             to="/components/github-isometric"
-            className="group relative overflow-hidden bg-[#C6A27E] text-black px-10 py-5 rounded-2xl font-black text-lg flex items-center gap-3 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-[0_20px_50px_rgba(198,162,126,0.25)]"
+            className="group relative px-8 py-4 bg-[#C6A27E] text-black font-bold rounded-xl overflow-hidden shadow-lg shadow-[#C6A27E]/20 transition-all hover:translate-y-[-2px] active:scale-95"
           >
-            <span className="relative z-10 flex items-center gap-3">
-              Explore Library
-              <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            <span className="relative flex items-center gap-2">
+              Get Started <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </span>
           </Link>
 
@@ -165,67 +105,41 @@ export default function LandingPage() {
             href="https://github.com/Ananta-TI"
             target="_blank"
             rel="noreferrer"
-            className={`px-10 py-5 rounded-2xl font-semibold text-lg border backdrop-blur-xl transition-all active:scale-[0.97] ${
-              isDarkMode
-                ? "border-white/10 bg-white/[0.03] hover:bg-white/[0.05]"
-                : "border-black/10 bg-black/[0.03] hover:bg-black/[0.05]"
+            className={`flex items-center gap-2 px-8 py-4 rounded-xl font-bold border backdrop-blur-md transition-all hover:bg-white/5 active:scale-95 ${
+              isDarkMode ? "border-white/10 bg-white/[0.02]" : "border-black/10 bg-black/[0.02]"
             }`}
           >
-            Github Repository
+            <ArrowRight size={18} /> View Source
           </a>
         </motion.div>
 
-        {/* STATS */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="mt-28 w-full max-w-4xl grid grid-cols-2 md:grid-cols-3 gap-6"
-        >
+        {/* STATS/FEATURES GRID */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
           {[
-            {
-              icon: <Zap size={22} />,
-              title: "Fast",
-              desc: "Optimized Code",
-            },
-            {
-              icon: <Layers size={22} />,
-              title: "10+",
-              desc: "Components",
-            },
-            {
-              icon: <Box size={22} />,
-              title: "3D",
-              desc: "Canvas Ready",
-            },
-          ].map((item, index) => (
-            <div
-              key={index}
-              className={`rounded-3xl border backdrop-blur-xl p-8 flex flex-col items-center text-center transition-all hover:border-[#C6A27E]/30 ${
-                isDarkMode
-                  ? "border-white/10 bg-white/[0.03]"
-                  : "border-black/10 bg-black/[0.03]"
+            { icon: <Zap />, title: "Ultra Fast", desc: "Optimized for 60fps performance" },
+            { icon: <Layers />, title: "10+ UI Kits", desc: "Ready to use components" },
+            { icon: <Box />, title: "3D Ready", desc: "Easy Three.js integration" },
+          ].map((item, idx) => (
+            <motion.div
+              key={idx}
+              whileHover={{ y: -8, borderColor: "rgba(198,162,126,0.5)" }}
+              className={`p-8 rounded-3xl border text-left backdrop-blur-xl transition-colors ${
+                isDarkMode ? "border-white/5 bg-white/[0.02]" : "border-black/5 bg-black/[0.02]"
               }`}
             >
-              <div className="text-[#C6A27E] mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#C6A27E]/10 flex items-center justify-center text-[#C6A27E] mb-6">
                 {item.icon}
               </div>
-
-              <span className="text-3xl font-black mb-1">
-                {item.title}
-              </span>
-
-              <span
-                className={`text-xs uppercase tracking-[0.25em] ${
-                  isDarkMode ? "text-zinc-500" : "text-zinc-600"
-                }`}
-              >
-                {item.desc}
-              </span>
-            </div>
+              <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
+              <p className={`text-sm ${isDarkMode ? "text-zinc-500" : "text-zinc-400"}`}>{item.desc}</p>
+            </motion.div>
           ))}
         </motion.div>
-      </div>
+
+      </motion.main>
+
+      {/* FOOTER */}
+      <Footer />
     </div>
   );
 }

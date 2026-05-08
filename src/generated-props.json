@@ -1,0 +1,38 @@
+{
+  "github-isometric": [
+    {
+      "name": "username",
+      "type": "string",
+      "default": "Ananta-TI",
+      "desc": "Username GitHub yang data kontribusinya akan divisualisasikan."
+    }
+  ],
+  "nta-button": [
+    {
+      "name": "text",
+      "type": "string",
+      "default": "Click Me",
+      "desc": "Teks yang akan ditampilkan di dalam tombol"
+    }
+  ],
+  "spotlight-grid": [
+    {
+      "name": "items",
+      "type": "object",
+      "default": "[...]",
+      "desc": "Array berisi data untuk masing-masing card"
+    },
+    {
+      "name": "spotlightColor",
+      "type": "string",
+      "default": "rgba(57, 211, 83, 0.25)",
+      "desc": "Warna cahaya senter (Gunakan format rgba agar halus)"
+    },
+    {
+      "name": "spotlightSize",
+      "type": "number",
+      "default": "350",
+      "desc": "Seberapa besar sebaran cahaya (dalam pixel)"
+    }
+  ]
+}

@@ -17,7 +17,6 @@ function App() {
               <Route path="/components/:id" element={<ComponentPage />} />
             </Routes>
           </main>
-          <Footer /> {/* Footer muncul di semua halaman */}
         </div>
       </Router>
     </ThemeProvider>
