@@ -4,7 +4,7 @@
       "name": "username",
       "type": "string",
       "default": "Ananta-TI",
-      "desc": "Username GitHub yang data kontribusinya akan divisualisasikan."
+      "desc": "GitHub username to fetch and visualize contributions for"
     }
   ],
   "nta-button": [

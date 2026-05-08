@@ -66,7 +66,7 @@ export default function NtaSpotlightGrid({
             transition={{ duration: 0.5, delay: idx * 0.1 }}
             key={idx}
             // Class 'spotlight-card' penting untuk querySelector
-            className="spotlight-card relative h-full rounded-[24px] p-[1px] overflow-hidden bg-zinc-800/30"
+            className="spotlight-card relative h-full rounded-24px p-1px overflow-hidden bg-zinc-800/30"
           >
             {/* --- EFEK SPOTLIGHT BORDER --- */}
             <div
