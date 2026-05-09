@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
 import Header from "./components/ui/Header";
 import Footer from "./components/ui/Footer";
-import Test from "./playground/Test";
+// import Test from "./playground/Test";
 import LandingPage from "./pages/LandingPage";
 import ComponentPage from "./pages/ComponentPage";
 
@@ -16,7 +16,7 @@ function App() {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/components/:id" element={<ComponentPage />} />
-              <Route path="/test" element={<Test />} />
+              {/* <Route path="/test" element={<Test />} /> */}
             </Routes>
           </main>
         </div>
