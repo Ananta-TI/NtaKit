@@ -1,8 +1,8 @@
 import { defineConfig } from 'jsrepo';
 
 export default defineConfig({
-  registries: ["github/Ananta-TI/NtaKit/components"],
+  registries: ["github/Ananta-TI/NtaKit/components/docs"],
   paths: {
-    components: "./src/components"
+    components: "./src/components/docs"
   }
 });

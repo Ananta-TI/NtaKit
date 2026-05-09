@@ -1,0 +1,18 @@
+{
+  "$schema": "https://jsrepo.dev/schema/registry.json",
+  "name": "NtaKit",
+  "components": [
+    {
+      "name": "github-isometric",
+      "path": "src/components/docs/GithubIsometric.jsx"
+    },
+    {
+      "name": "nta-button",
+      "path": "src/components/docs/NtaButton.jsx"
+    },
+    {
+      "name": "spotlight-grid",
+      "path": "src/components/docs/SpotlightGrid.jsx"
+    }
+  ]
+}
