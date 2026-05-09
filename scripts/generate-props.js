@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const componentsDir = path.resolve(__dirname, '../src/components/docs');
+const componentsDir = path.resolve(__dirname, '../src/components/registry');
 const outputFile = path.resolve(__dirname, '../src/generated-props.json');
 
 const registryProps = {};
