@@ -75,7 +75,7 @@
   left: 0;
   width: 2.5rem; /* Lebar kolom angka */
   text-align: right;
-  color: rgba(255, 255, 255, 0.15); /* Warna angka (redup ala VS Code) */
+  color: rgb(121, 121, 121); /* Warna angka (redup ala VS Code) */
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 11px;
   user-select: none; /* Biar angka nggak ikut ke-copy */
@@ -88,5 +88,5 @@
 }
 
 .shiki-container .line:hover::before {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgb(121, 121, 121);
 }
