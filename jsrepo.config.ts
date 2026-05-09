@@ -25,6 +25,7 @@ export default defineConfig({
     outputs: [repository()],
   },
   paths: {
-    components: "./src/components/registry"
+    components: './src/components/registry',
+		component: './src/playground'
   }
 });
