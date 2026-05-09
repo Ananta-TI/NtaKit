@@ -8,6 +8,7 @@ import Sidebar from "../components/ui/Sidebar";
 import PromoSidebar from "../components/ui/PromoSidebar";
 import { getCleanCode } from "../utils/cleaner";
 import generatedProps from "../generated-props.json";
+import { extractDependencies } from "../utils/extractDependencies";
 
 export default function ComponentPage() {
   const { id } = useParams();
@@ -19,6 +20,12 @@ export default function ComponentPage() {
   const [componentProps, setComponentProps] = useState({});
 
   const componentData = componentRegistry[id];
+
+
+  const dependencies = useMemo(() => {
+  return extractDependencies(componentData?.code || "");
+}, [componentData]);
+
 
   useEffect(() => {
     if (componentData?.defaultProps) setComponentProps(componentData.defaultProps);
@@ -139,6 +146,28 @@ const installCommands = useMemo(() => ({
                     </div>
                   </div>
                 </section>
+                <section className="mb-10">
+  <h2 className="text-lg font-bold mb-4 tracking-tight">
+    Dependencies
+  </h2>
+
+  <div className="flex flex-wrap gap-2">
+    {dependencies.length > 0 ? (
+      dependencies.map((dep) => (
+        <div
+          key={dep}
+          className="px-3 py-2 rounded-lg border border-brand-border bg-brand-surface/15 text-xs font-mono text-brand-accent"
+        >
+          {dep}
+        </div>
+      ))
+    ) : (
+      <p className="text-xs text-brand-text/30">
+        No external dependencies.
+      </p>
+    )}
+  </div>
+</section>
               </motion.div>
             ) : (
               <motion.div key="c" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }}>
