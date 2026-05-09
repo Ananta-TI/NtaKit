@@ -1,10 +1,10 @@
 // preview
-import NtaButton from "../components/Demo/NtaButtonDemo";
+import NtaButton from "../components/Demo/ButtonDemo";
 import GithubIsometric from "../components/Demo/GithubIsometricDemo";
 import NtaSpotlightGrid from "../components/Demo/SpotlightGridDemo";
 
 // code
-import NtaButtonRaw from "../components/registry/NtaButton.jsx?raw";
+import NtaButtonRaw from "../components/registry/Button.jsx?raw";
 import GithubIsometricRaw from "../components/registry/GithubIsometric.jsx?raw";
 import NtaSpotlightGridRaw from "../components/registry/SpotlightGrid.jsx?raw";
 
@@ -24,24 +24,31 @@ export const componentRegistry = {
 />`
   },
 
-  "nta-button": {
+  "button": {
     name: "button",
     component: NtaButton,
     code: getCleanCode(NtaButtonRaw),
     
     // 👇 Tulis persis seperti format "orang-orang" itu
-    usage: `import NtaButton from "./NtaButton";
+    usage: `import NtaButton from "./Button";
 
-const handleButtonClick = () => {
-  console.log('Button has been clicked!');
-};
-
-<NtaButton
-  text="Submit Data"
-  className="w-full font-bold"
-  delay={200}
-  onClick={handleButtonClick}
-/>`
+export default function App() {
+  return (
+    <NtaButton
+      text="Get Started"
+      glowColor="280 100 70"
+      glowIntensity={1}
+      borderRadius={16}
+      animated={true}
+      colors={[
+        "#c084fc",
+        "#f472b6",
+        "#38bdf8"
+      ]}
+      onClick={() => console.log("Clicked")}
+    />
+  );
+}`
   },
 
   "spotlight-grid": {

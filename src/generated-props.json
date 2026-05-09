@@ -1,18 +1,78 @@
 {
+  "button": [
+    {
+      "name": "text",
+      "type": "string",
+      "default": "Click Me",
+      "desc": "Teks yang akan ditampilkan di dalam tombol"
+    },
+    {
+      "name": "edgeSensitivity",
+      "type": "number",
+      "default": "30",
+      "desc": "Sensitivitas deteksi tepi kursor terhadap elemen"
+    },
+    {
+      "name": "glowColor",
+      "type": "string",
+      "default": "40 80 80",
+      "desc": "Warna cahaya glow dalam format HSL tanpa koma (contoh: '40 80 80')"
+    },
+    {
+      "name": "backgroundColor",
+      "type": "string",
+      "default": "#120F17",
+      "desc": "Warna latar belakang tombol"
+    },
+    {
+      "name": "borderRadius",
+      "type": "number",
+      "default": "12",
+      "desc": "Radius border tombol dalam pixel"
+    },
+    {
+      "name": "glowRadius",
+      "type": "number",
+      "default": "40",
+      "desc": "Seberapa jauh cahaya glow menyebar keluar"
+    },
+    {
+      "name": "glowIntensity",
+      "type": "number",
+      "default": "0.8",
+      "desc": "Intensitas kecerahan glow"
+    },
+    {
+      "name": "coneSpread",
+      "type": "number",
+      "default": "25",
+      "desc": "Sebaran sudut kerucut cahaya dalam derajat"
+    },
+    {
+      "name": "animated",
+      "type": "boolean",
+      "default": "false",
+      "desc": "Apakah efek sweep animasi berjalan saat pertama kali render"
+    },
+    {
+      "name": "colors",
+      "type": "object",
+      "default": "[...]",
+      "desc": "Array warna untuk mesh gradient border"
+    },
+    {
+      "name": "fillOpacity",
+      "type": "number",
+      "default": "0.5",
+      "desc": "Transparansi pengisian warna mesh gradient di tepi"
+    }
+  ],
   "github-isometric": [
     {
       "name": "username",
       "type": "string",
       "default": "Ananta-TI",
       "desc": "GitHub username to fetch and visualize contributions for"
-    }
-  ],
-  "nta-button": [
-    {
-      "name": "text",
-      "type": "string",
-      "default": "Click Me",
-      "desc": "Teks yang akan ditampilkan di dalam tombol"
     }
   ],
   "spotlight-grid": [

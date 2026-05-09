@@ -11,9 +11,9 @@ export default defineConfig({
         files: [{ path: "src/components/registry/GithubIsometric.jsx" }]
       },
       {
-        name: "nta-button",
+        name: "button",
         type: "registry:component",
-        files: [{ path: "src/components/registry/NtaButton.jsx" }]
+        files: [{ path: "src/components/registry/Button.jsx" }]
       },
       {
         name: "spotlight-grid",
