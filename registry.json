@@ -1,7 +1,7 @@
 {
   "$schema": "https://jsrepo.dev/schema/registry.json",
   "name": "NtaKit",
-  "components": [
+  "items": [
     {
       "name": "github-isometric",
       "path": "src/components/docs/GithubIsometric.jsx"
