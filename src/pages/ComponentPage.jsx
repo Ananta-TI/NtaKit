@@ -36,7 +36,12 @@ export default function ComponentPage() {
   if (!componentData) return <div className="p-10 text-brand-text text-sm">Component not found.</div>;
 
   const SelectedComponent = componentData.component;
-
+const installCommands = useMemo(() => ({
+  npm: `npx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
+  pnpm: `pnpm dlx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
+  yarn: `yarn dlx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
+  bun: `bunx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
+}), [id]);
   return (
     <div className="flex min-h-screen bg-brand-bg text-brand-text">
       <Sidebar />
@@ -60,9 +65,14 @@ export default function ComponentPage() {
                 <button className="p-2.5 rounded-lg border border-brand-border text-brand-text/30 hover:text-red-400 transition-all">
                   <Heart size={16} />
                 </button>
-                <button onClick={() => { navigator.clipboard.writeText(`Implement ${componentData.name} in React...`); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }} className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-brand-border text-[10px] font-semibold hover:bg-brand-surface/30 transition-all">
-                  {copiedPrompt ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
-                  {copiedPrompt ? "Copied" : "Copy Prompt"}
+                <button
+  onClick={() => {
+    navigator.clipboard.writeText(installCommands[pkgManager]);
+    setCopiedInstall(true);
+    setTimeout(() => setCopiedInstall(false), 2000);
+  }} className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-brand-border text-[10px] font-semibold hover:bg-brand-surface/30 transition-all">
+                  {copiedInstall ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
+                  {copiedInstall ? "Copied" : "Copy Install Command"}
                 </button>
               </div>
             </div>
@@ -150,9 +160,10 @@ export default function ComponentPage() {
                       <div className="p-4 font-mono text-[12px] flex justify-between items-center gap-4">
                         <div className="flex items-center gap-3 min-w-0">
                           <Terminal size={14} className="text-brand-text/20 flex-shrink-0" />
-                          <code className="text-brand-text/70 text-[11px] truncate">{pkgManager} <span className="text-brand-accent">jsrepo@latest</span> add github/Ananta-TI/NtaKit/components/{id}</code>
-                        </div>
-                        <button onClick={() => { navigator.clipboard.writeText(`${pkgManager} jsrepo@latest add github/Ananta-TI/NtaKit/components/${id}`); setCopiedInstall(true); setTimeout(() => setCopiedInstall(false), 2000); }} className="p-1.5 rounded-md border border-brand-border text-brand-text/30 hover:text-brand-accent transition-colors flex-shrink-0">
+<code className="text-brand-text/70 text-[11px] truncate">
+  {installCommands[pkgManager]}
+</code>                        </div>
+                        <button onClick={() => { navigator.clipboard.writeText(installCommands[pkgManager]); setCopiedInstall(true); setTimeout(() => setCopiedInstall(false), 2000); }} className="p-1.5 rounded-md border border-brand-border text-brand-text/30 hover:text-brand-accent transition-colors flex-shrink-0">
                           {copiedInstall ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
                         </button>
                       </div>

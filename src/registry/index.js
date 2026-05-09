@@ -1,12 +1,12 @@
 // preview
-import NtaButton from "../components/docs/NtaButton";
-import GithubIsometric from "../components/docs/GithubIsometric";
-import NtaSpotlightGrid from "../components/docs/SpotlightGrid";
+import NtaButton from "../components/Demo/NtaButtonDemo";
+import GithubIsometric from "../components/Demo/GithubIsometricDemo";
+import NtaSpotlightGrid from "../components/Demo/SpotlightGridDemo";
 
 // code
-import NtaButtonRaw from "../components/docs/NtaButton.jsx?raw";
-import GithubIsometricRaw from "../components/docs/GithubIsometric.jsx?raw";
-import NtaSpotlightGridRaw from "../components/docs/SpotlightGrid.jsx?raw";
+import NtaButtonRaw from "../components/registry/NtaButton.jsx?raw";
+import GithubIsometricRaw from "../components/registry/GithubIsometric.jsx?raw";
+import NtaSpotlightGridRaw from "../components/registry/SpotlightGrid.jsx?raw";
 
 // cleaner
 import { getCleanCode } from "../utils/cleaner";

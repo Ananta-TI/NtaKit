@@ -18,8 +18,8 @@ export default function CodeBox({ code, hideHeader = false, language = "jsx", ex
     async function highlight() {
       setIsLoading(true);
       try {
-        const h = await createHighlighter({ themes: ["tokyo-night"], langs: ["jsx", "javascript", "typescript", "css"] });
-        const html = h.codeToHtml(code || "", { lang: language || "jsx", theme: "tokyo-night" });
+        const h = await createHighlighter({ themes: ["monokai"], langs: ["jsx", "javascript", "typescript", "css"] });
+        const html = h.codeToHtml(code || "", { lang: language || "jsx", theme: "monokai" });
         if (mounted) { setHighlightedHtml(html); setIsLoading(false); }
         h.dispose();
       } catch { setIsLoading(false); }
