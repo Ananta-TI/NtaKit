@@ -4,14 +4,17 @@
   "items": [
     {
       "name": "github-isometric",
+      "type": "registry:component",
       "path": "src/components/docs/GithubIsometric.jsx"
     },
     {
       "name": "nta-button",
+      "type": "registry:component",
       "path": "src/components/docs/NtaButton.jsx"
     },
     {
       "name": "spotlight-grid",
+      "type": "registry:component",
       "path": "src/components/docs/SpotlightGrid.jsx"
     }
   ]
