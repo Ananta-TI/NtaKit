@@ -53,7 +53,7 @@ export default function Header() {
   const mobileSearchRef = useRef(null);
 
   const { scrollY } = useScroll();
-  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 20));
+  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 0));
 
   useEffect(() => {
     const onKey = (e) => {
@@ -96,7 +96,7 @@ export default function Header() {
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 ${
             scrolled
-              ? "h-14 bg-brand-bg/80 backdrop-blur-xl border-b border-brand-border/40"
+              ? "h-16 bg-brand-bg/80 backdrop-blur-xl "
               : "h-16 bg-transparent"
           }`}
         >
@@ -193,7 +193,7 @@ export default function Header() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className={`sticky top-0 z-50 transition-all duration-300 ${
-          scrolled ? "h-14 shadow-sm shadow-black/[0.02]" : "h-16"
+          scrolled ? "h-16 shadow-sm shadow-black/[0.02]" : "h-16"
         } border-b border-brand-border bg-brand-bg/80 backdrop-blur-xl text-brand-text`}
       >
         <div className="h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 max-w-[1400px] mx-auto">
@@ -328,6 +328,16 @@ export default function Header() {
                     </a>
                   </div>
 
+
+                  {/* Getting Started */}
+                  <div className="px-4 pb-4">
+                    <p className="text-[10px] font-semibold text-brand-text/20 uppercase tracking-[0.15em] mb-2 px-1">Getting Started</p>
+                    <div className="flex flex-col gap-0.5 text-[11px] font-medium">
+                      <a href="#" className="px-3 py-2.5 rounded-lg text-brand-text/30 hover:text-brand-accent hover:bg-brand-surface/30 transition-all">Installation</a>
+                      <a href="#" className="px-3 py-2.5 rounded-lg text-brand-text/30 hover:text-brand-accent hover:bg-brand-surface/30 transition-all">Theming</a>
+                    </div>
+                  </div>
+
                   {/* Component List */}
                   <div className="px-4 pb-4">
                     <p className="text-[10px] font-semibold text-brand-accent/60 uppercase tracking-[0.15em] mb-2 px-1">Components</p>
@@ -352,14 +362,7 @@ export default function Header() {
                     </div>
                   </div>
 
-                  {/* Getting Started */}
-                  <div className="px-4 pb-4">
-                    <p className="text-[10px] font-semibold text-brand-text/20 uppercase tracking-[0.15em] mb-2 px-1">Getting Started</p>
-                    <div className="flex flex-col gap-0.5 text-[11px] font-medium">
-                      <a href="#" className="px-3 py-2.5 rounded-lg text-brand-text/30 hover:text-brand-accent hover:bg-brand-surface/30 transition-all">Installation</a>
-                      <a href="#" className="px-3 py-2.5 rounded-lg text-brand-text/30 hover:text-brand-accent hover:bg-brand-surface/30 transition-all">Theming</a>
-                    </div>
-                  </div>
+                  
                 </div>
 
                 <div className="p-4 border-t border-brand-border">

@@ -18,7 +18,7 @@ export default function PromoSidebar() {
   const latest = allComponents.slice(-3).reverse();
 
   return (
-    <aside className="w-64 hidden xl:block border-l border-brand-border sticky top-14 h-[calc(100vh-56px)] overflow-y-auto bg-brand-bg p-5 custom-scrollbar z-20">
+<aside className="fixed top-14 right-0 w-64 hidden xl:block border-l border-brand-border h-[calc(100vh-56px)] overflow-y-auto bg-brand-bg p-5 custom-scrollbar z-20">
       <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="space-y-8">
         {/* Card */}
         <div className="bg-brand-surface/20 border border-brand-border rounded-xl p-5">
