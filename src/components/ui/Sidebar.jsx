@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { componentRegistry } from "../../registry";
 
+
 export default function Sidebar() {
   const { id } = useParams();
 
@@ -11,12 +12,12 @@ export default function Sidebar() {
           Getting Started
         </p>
         <nav className="flex flex-col gap-0.5 text-[11px] font-medium">
-          <a
-            href="#"
+          <Link
+            to="/installation"
             className="px-3 py-2 rounded-lg text-brand-text/30 hover:text-brand-accent hover:bg-brand-surface/30 transition-all"
           >
             Installation
-          </a>
+          </Link>
           <a
             href="#"
             className="px-3 py-2 rounded-lg text-brand-text/30 hover:text-brand-accent hover:bg-brand-surface/30 transition-all"

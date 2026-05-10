@@ -3,6 +3,7 @@ import NtaButton from "../components/Demo/ButtonDemo";
 import GithubIsometric from "../components/Demo/GithubIsometricDemo";
 import NtaSpotlightGrid from "../components/Demo/SpotlightGridDemo";
 import ContactDemo from "../components/Demo/ContactFromDemo";
+// import Installation from "../components/ui/Installation";
 
 // code
 import ContactRaw from "../components/registry/ContactForm.jsx?raw";
@@ -14,6 +15,10 @@ import NtaSpotlightGridRaw from "../components/registry/SpotlightGrid.jsx?raw";
 import { getCleanCode } from "../utils/cleaner";
 
 export const componentRegistry = {
+  
+
+
+
   "github-isometric": {
     name: "github isometric",
     component: GithubIsometric,

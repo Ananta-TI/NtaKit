@@ -1,10 +1,12 @@
 import React, { useRef, useState, useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
+import MagneticEffect from "../../context/MagneticEffect";
 import { Mail, Loader, ArrowUpRight } from "lucide-react";
 import emailjs from "emailjs-com";
 import supabase from "../../supabaseClient";
 import gsap from "gsap";
 import Footer from "../../components/ui/Footer";
+
 
 function cn(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -35,7 +37,11 @@ function ContactFormLine({ inputId, hasError }) {
 
 export default function Contact() {
   const { isDarkMode } = useContext(ThemeContext);
+
   const formRef = useRef(null);
+
+  const buttonRef = useRef(null);
+  const circleRef = useRef(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -43,6 +49,36 @@ export default function Contact() {
     subject: "",
     message: "",
   });
+
+  const handleMouseEnter = (e) => {
+    const bounds = buttonRef.current.getBoundingClientRect();
+
+    const x = e.clientX - bounds.left;
+    const y = e.clientY - bounds.top;
+
+    gsap.set(circleRef.current, {
+      x,
+      y,
+      scale: 0,
+      opacity: 1,
+    });
+
+    gsap.to(circleRef.current, {
+      scale: 1,
+      duration: 0.5,
+      ease: "power3.out",
+    });
+  };
+
+  const handleMouseLeave = () => {
+    gsap.to(circleRef.current, {
+      scale: 0,
+      opacity: 0,
+      duration: 0.4,
+      ease: "power3.out",
+    });
+  };
+
 
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -212,31 +248,50 @@ export default function Contact() {
 
               {/* Submit Button - Full width di mobile, auto di desktop */}
               <div className="pt-8 md:pt-14 flex flex-col sm:flex-row items-start gap-6">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={cn(
-                    "group relative w-full sm:w-auto flex items-center justify-center gap-4 px-8 py-4 sm:px-10 sm:py-5 rounded-full text-brand-bg bg-brand-accent font-bold text-base sm:text-lg overflow-hidden transition-all duration-300",
-                    "hover:shadow-xl hover:shadow-brand-accent/20",
-                    "disabled:opacity-50 disabled:cursor-not-allowed"
-                  )}
-                >
-                  <span className="relative z-10 flex items-center gap-3">
-                    {loading ? (
-                      <>
-                        <Loader className="animate-spin" size={20} />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        Send it!
-                        <div className="bg-brand-bg text-brand-accent rounded-full p-1.5 transition-transform group-hover:rotate-0 group-hover:scale-110 -rotate-12">
-                          <ArrowUpRight size={16} strokeWidth={3} />
-                        </div>
-                      </>
-                    )}
-                  </span>
-                </button>
+
+              <MagneticEffect>
+  <button
+    ref={buttonRef}
+    type="submit"
+    disabled={loading}
+    onMouseEnter={handleMouseEnter}
+    onMouseLeave={handleMouseLeave}
+    className={cn(
+      "group relative w-full sm:w-auto flex items-center justify-center gap-4 px-8 py-4 sm:px-10 sm:py-5 rounded-full overflow-hidden border transition-all duration-300",
+      "border-brand-accent bg-transparent",
+      "hover:shadow-xl hover:shadow-brand-accent/20",
+      "disabled:opacity-50 disabled:cursor-not-allowed"
+    )}
+  >
+    {/* Animated Fill */}
+    <span
+      ref={circleRef}
+      className="absolute top-0 left-0 w-[250%] aspect-square rounded-full bg-brand-accent pointer-events-none"
+      style={{
+        transform: "translate(-50%, -50%) scale(0)",
+        opacity: 0,
+      }}
+    />
+
+    {/* Content */}
+    <span className="relative z-10 flex items-center gap-3 font-bold text-base sm:text-lg text-brand-accent transition-colors duration-300 group-hover:text-brand-bg">
+      {loading ? (
+        <>
+          <Loader className="animate-spin" size={20} />
+          Sending...
+        </>
+      ) : (
+        <>
+          Send it!
+
+          <div className="bg-brand-accent text-brand-bg rounded-full p-1.5 transition-all duration-300 group-hover:bg-brand-bg group-hover:text-brand-accent group-hover:scale-110 group-hover:rotate-0 -rotate-12">
+            <ArrowUpRight size={16} strokeWidth={3} />
+          </div>
+        </>
+      )}
+    </span>
+  </button>
+</MagneticEffect>
 
                 {sent && (
                   <p className="text-brand-accent font-mono font-bold text-sm flex items-center gap-2 animate-pulse">
@@ -257,14 +312,17 @@ export default function Contact() {
               </h5>
               <ul className="flex flex-col gap-2 md:gap-3">
                 <li className="group">
+                <MagneticEffect>
+
                   <a 
                     href="mailto:ananta23ti@mahasiswa.pcr.ac.id" 
                     // Break-all supaya email panjang tidak overflow di mobile
-                    className="text-base sm:text-lg md:text-xl font-medium hover:text-brand-accent  transition-colors inline-flex items-center gap-2 w-fit break-all"
+                    className="text-base sm:text-lg md:text-xl font-medium hover:text-brand-accent hover:underline transition-colors inline-flex items-center gap-2 w-fit break-all"
                   >
                     ananta23ti@mahasiswa.pcr.ac.id
-                    <ArrowUpRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity text-brand-accent flex-shrink-0" />
+                    {/* <ArrowUpRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity text-brand-accent flex-shrink-0" /> */}
                   </a>
+                </MagneticEffect>
                 </li>
                 <li>
                   <p className="text-base sm:text-lg md:text-xl font-medium text-brand-text/70">
@@ -297,6 +355,7 @@ export default function Contact() {
                   { name: "LinkedIn", url: "https://www.linkedin.com/in/ananta-firdaus-93448328b/" },
                   { name: "GitHub", url: "https://github.com/Ananta-TI" },
                 ].map((social) => (
+          
                   <li key={social.name} className="group">
                     <a
                       href={social.url}
@@ -308,6 +367,7 @@ export default function Contact() {
                       <ArrowUpRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity text-brand-accent" />
                     </a>
                   </li>
+            
                 ))}
               </ul>
             </div>

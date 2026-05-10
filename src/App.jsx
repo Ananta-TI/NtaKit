@@ -1,26 +1,36 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
 import Header from "./components/ui/Header";
-import Footer from "./components/ui/Footer";
-// import Test from "./playground/Test";
+
+import AppLayout from "./pages/AppLayout";
 import LandingPage from "./pages/LandingPage";
 import ComponentPage from "./pages/ComponentPage";
+import InstallationPage from "./components/ui/Installation";
 import Contact from "./components/ui/Contact";
 
 function App() {
   return (
     <ThemeProvider>
       <Router>
-<div className="min-h-screen bg-brand-bg text-brand-text transition-colors duration-300">
-          <Header /> {/* Header muncul di semua halaman */}
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
+        <div className="min-h-screen bg-brand-bg text-brand-text">
+          
+          {/* HEADER GLOBAL */}
+          <Header />
+
+          <Routes>
+
+            {/* PUBLIC / SIMPLE PAGES */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/contact" element={<Contact />} />
+
+            {/* ALL DOCS LAYOUT (SIDEBAR + PROMO) */}
+            <Route element={<AppLayout />}>
               <Route path="/components/:id" element={<ComponentPage />} />
-              {/* <Route path="/test" element={<Test />} /> */}
-              <Route path="/contact" element={<Contact />} />
-            </Routes>
-          </main>
+              <Route path="/installation" element={<InstallationPage />} />
+            </Route>
+
+          </Routes>
+
         </div>
       </Router>
     </ThemeProvider>
