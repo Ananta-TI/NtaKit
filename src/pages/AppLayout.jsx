@@ -4,14 +4,23 @@ import { Outlet } from "react-router-dom";
 
 export default function AppLayout() {
   return (
-    <div className="min-h-screen bg-brand-bg text-brand-text">
-      <Sidebar />
+    <div className="min-h-screen bg-brand-bg text-brand-text grid grid-cols-1 md:grid-cols-[14rem_1fr] xl:grid-cols-[14rem_1fr_18rem]">
+      
+      {/* LEFT SIDEBAR */}
+      <aside className="hidden md:block">
+        <Sidebar />
+      </aside>
 
-      <main className="pl-0 md:pl-56 xl:pr-64 px-4 md:px-8 lg:px-10 pt-24 pb-10">
+      {/* MAIN CONTENT */}
+      <main className="min-w-0 px-4 md:px-8 lg:px-10 pt-24 pb-10">
         <Outlet />
       </main>
 
-      <PromoSidebar />
+      {/* RIGHT SIDEBAR */}
+      <aside className="hidden xl:block">
+        <PromoSidebar />
+      </aside>
+
     </div>
   );
 }
