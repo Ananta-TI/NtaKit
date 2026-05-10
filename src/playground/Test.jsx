@@ -4,12 +4,16 @@ import { motion } from "framer-motion";
 import GithubIsometric from "./GithubIsometric";
 import NtaButton from "./NtaButton";
 import NtaSpotlightGrid from "./SpotlightGrid";
+import ContactForm from "./ContactForm";
 
-
+const handleFormSubmit = async (formData) => {
+    console.log("Data yang dikirim:", formData);
+};
 
 const handleButtonClick = () => {
-  console.log('Button has been clicked!');
+    console.log('Button has been clicked!');
 };
+
 
 const myServices = [
   { title: "Frontend", desc: "Crafting beautiful UI." },
@@ -37,6 +41,10 @@ export default function PlaygroundHome() {
   spotlightColor="rgba(57, 211, 83, 0.3)" 
   spotlightSize={400} 
 />
+
+ <ContactForm 
+       
+      />
     </div>
   );
 }

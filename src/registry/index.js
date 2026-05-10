@@ -76,29 +76,8 @@ const myServices = [
     component: ContactDemo,
     code: getCleanCode(ContactRaw),
 
-    usage: `import ContactForm from "./ContactForm";
+    usage: `import Contact from "./Contact";
 
-export default function App() {
-  // Fungsi ini akan menangkap data dari form
-  const handleFormSubmit = async (formData) => {
-    console.log("Data yang dikirim:", formData);
-    
-    // Simulasi loading API selama 2 detik
-    // (Animasi loading di tombol akan berputar selama ini berjalan)
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    // Lanjutkan dengan pengiriman ke API/Supabase/EmailJS milik user
-  };
-
-  return (
-    <div className="flex min-h-screen items-center justify-center p-6 bg-zinc-50 dark:bg-zinc-950">
-      <ContactForm 
-        onSubmit={handleFormSubmit} 
-        title="Get in Touch"
-        successMessage="Pesan berhasil dikirim ke Ananta!" 
-      />
-    </div>
-  );
-}`
-  }
+      <Contact />
+    `},
 };
