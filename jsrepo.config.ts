@@ -19,6 +19,11 @@ export default defineConfig({
         name: "spotlight-grid",
         type: "registry:component",
         files: [{ path: "src/components/registry/SpotlightGrid.jsx" }]
+      },
+      {
+        name: "contact-form",
+        type: "registry:component",
+        files: [{ path: "src/components/registry/ContactForm.jsx" }]
       }
     ],
     // Ini bagian yang paling penting agar file .json per komponen terbuat!
