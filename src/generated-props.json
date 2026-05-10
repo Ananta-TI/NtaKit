@@ -67,6 +67,38 @@
       "desc": "Transparansi pengisian warna mesh gradient di tepi"
     }
   ],
+  "contact-form": [
+    {
+      "name": "title",
+      "type": "string",
+      "default": "Get in Touch",
+      "desc": "Judul yang ditampilkan di atas form."
+    },
+    {
+      "name": "successMessage",
+      "type": "string",
+      "default": "Message sent successfully.",
+      "desc": "Pesan yang ditampilkan saat form berhasil dikirim."
+    },
+    {
+      "name": "buttonText",
+      "type": "string",
+      "default": "Send Message",
+      "desc": "Teks yang ditampilkan pada tombol submit dalam keadaan idle."
+    },
+    {
+      "name": "loadingText",
+      "type": "string",
+      "default": "Sending...",
+      "desc": "Teks yang ditampilkan pada tombol saat form sedang dalam proses pengiriman."
+    },
+    {
+      "name": "successDuration",
+      "type": "number",
+      "default": "5000",
+      "desc": "Durasi pesan sukses ditampilkan sebelum hilang otomatis dalam satuan milidetik."
+    }
+  ],
   "github-isometric": [
     {
       "name": "username",

@@ -5,6 +5,7 @@ import Footer from "./components/ui/Footer";
 // import Test from "./playground/Test";
 import LandingPage from "./pages/LandingPage";
 import ComponentPage from "./pages/ComponentPage";
+import Contact from "./components/ui/Contact";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/components/:id" element={<ComponentPage />} />
               {/* <Route path="/test" element={<Test />} /> */}
+              <Route path="/contact" element={<Contact />} />
             </Routes>
           </main>
         </div>

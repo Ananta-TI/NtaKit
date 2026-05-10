@@ -52,7 +52,6 @@ export default function ComponentPage() {
     <div className="flex min-h-screen bg-brand-bg text-brand-text">
       <Sidebar />
 
-      {/* PERBAIKAN RESPONSIVE: Ditambah min-w-0, md:ml-56, xl:mr-64, dan pt-24 */}
       <main className="flex-1 min-w-0 md:ml-56 xl:mr-64 px-4 md:px-8 lg:px-10 pb-8 pt-24 overflow-x-hidden">
         <div className="max-w-5xl mx-auto w-full">
 
@@ -93,14 +92,16 @@ export default function ComponentPage() {
           <AnimatePresence mode="wait">
             {activeTab === "preview" ? (
               <motion.div key="p" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }}>
-                {/* Preview */}
-                <div className="relative w-full rounded-xl border border-brand-border bg-brand-surface/20 overflow-hidden mb-10 min-h-[300px] sm:min-h-[450px] flex items-center justify-center">
+                
+                {/* PREVIEW BOX YANG SUDAH DIPERBAIKI */}
+                <div className="relative w-full rounded-xl border border-brand-border bg-brand-surface/20 overflow-hidden mb-10 min-h-[400px] sm:min-h-[500px] flex items-center justify-center p-4 sm:p-8 md:p-12">
                   <button className="absolute top-3 right-3 z-20 p-2 bg-brand-bg/70 border border-brand-border rounded-lg hover:bg-brand-accent hover:text-brand-bg transition-all backdrop-blur-sm">
                     <RotateCcw size={14} />
                   </button>
-                  {/* PERBAIKAN: scale menyesuaikan layar agar komponen tidak terpotong */}
-                  <div className="w-full h-full flex items-center justify-center p-4 md:p-10 overflow-hidden">
-                    <div className="scale-75 sm:scale-90 md:scale-100 origin-center transition-transform">
+                  
+                  {/* Wrapper komponen murni w-full tanpa scroll bar */}
+                  <div className="w-full max-w-3xl flex justify-center items-center">
+                    <div className="w-full">
                       <SelectedComponent {...componentProps} />
                     </div>
                   </div>
