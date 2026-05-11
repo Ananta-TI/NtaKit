@@ -536,7 +536,7 @@ export default function GithubIsometric({
       <div className="relative w-full h-[360px] md:h-[460px] lg:h-[600px]">
 
         {loading && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-30 z-10">
             <motion.div
               className={`w-8 h-8 border-[3px] rounded-full ${isDarkMode ? "border-green-500" : "border-green-600"} border-t-transparent`}
               animate={{ rotate: 360 }}

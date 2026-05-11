@@ -161,7 +161,7 @@ export default function App() {
         </section>
 
         {/* STEP 2 */}
-        <section className="mb-20">
+        {/* <section className="mb-20">
           <div className="mb-8 flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-accent text-black shadow-lg shadow-brand-accent/20">
               <Package size={20} />
@@ -188,9 +188,9 @@ export default function App() {
           </p>
 
           <CodeBlock code={registryExample} />
-        </section>
+        </section> */}
 
-        {/* STEP 3 */}
+        {/* STEP 2 */}
         <section className="mb-24">
           <div className="mb-8 flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-accent text-black shadow-lg shadow-brand-accent/20">
@@ -199,7 +199,7 @@ export default function App() {
 
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-brand-accent">
-                Step 03
+                Step 02
               </p>
 
               <h2 className="text-2xl font-black tracking-tight sm:text-3xl">

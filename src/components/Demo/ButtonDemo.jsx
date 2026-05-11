@@ -1,5 +1,6 @@
-import { useRef, useCallback, useState, useEffect } from 'react';
+import { useRef, useCallback, useState, useEffect, useContext } from 'react';
 import { motion } from "framer-motion";
+import { ThemeContext } from "../../context/ThemeContext.jsx";
 
 /* ─────────────────────────────────────────────
    Helper Functions for BorderGlow Effect
@@ -57,34 +58,21 @@ function buildMeshGradients(colors) {
 /* ─────────────────────────────────────────────
    Main Button Component
 ───────────────────────────────────────────── */
-export default function NtaButton({
-  /** Teks yang akan ditampilkan di dalam tombol */
+function NtaButton({
   text = "Click Me",
-  
-  /** Fungsi callback yang dipanggil ketika tombol diklik */
   onClick,
-  
-  /** Sensitivitas deteksi tepi kursor terhadap elemen */
   edgeSensitivity = 30,
-  /** Warna cahaya glow dalam format HSL tanpa koma (contoh: '40 80 80') */
   glowColor = '40 80 80',
-  /** Warna latar belakang tombol */
   backgroundColor = '#120F17',
-  /** Radius border tombol dalam pixel */
   borderRadius = 12,
-  /** Seberapa jauh cahaya glow menyebar keluar */
   glowRadius = 40,
-  /** Intensitas kecerahan glow */
   glowIntensity = 0.8,
-  /** Sebaran sudut kerucut cahaya dalam derajat */
   coneSpread = 25,
-  /** Apakah efek sweep animasi berjalan saat pertama kali render */
   animated = false,
-  /** Array warna untuk mesh gradient border */
   colors = ['#c084fc', '#f472b6', '#38bdf8'],
-  /** Transparansi pengisian warna mesh gradient di tepi */
   fillOpacity = 0.5,
 }) {
+  const { isDarkMode } = useContext(ThemeContext);
   const cardRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
   const [cursorAngle, setCursorAngle] = useState(45);
@@ -98,10 +86,8 @@ export default function NtaButton({
 
   const getEdgeProximity = useCallback((el, x, y) => {
     const [cx, cy] = getCenterOfElement(el);
-    const dx = x - cx;
-    const dy = y - cy;
-    let kx = Infinity;
-    let ky = Infinity;
+    const dx = x - cx; const dy = y - cy;
+    let kx = Infinity; let ky = Infinity;
     if (dx !== 0) kx = cx / Math.abs(dx);
     if (dy !== 0) ky = cy / Math.abs(dy);
     return Math.min(Math.max(1 / Math.min(kx, ky), 0), 1);
@@ -109,8 +95,7 @@ export default function NtaButton({
 
   const getCursorAngle = useCallback((el, x, y) => {
     const [cx, cy] = getCenterOfElement(el);
-    const dx = x - cx;
-    const dy = y - cy;
+    const dx = x - cx; const dy = y - cy;
     if (dx === 0 && dy === 0) return 0;
     const radians = Math.atan2(dy, dx);
     let degrees = radians * (180 / Math.PI) + 90;
@@ -119,22 +104,17 @@ export default function NtaButton({
   }, [getCenterOfElement]);
 
   const handlePointerMove = useCallback((e) => {
-    const card = cardRef.current;
-    if (!card) return;
+    const card = cardRef.current; if (!card) return;
     const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = e.clientX - rect.left; const y = e.clientY - rect.top;
     setEdgeProximity(getEdgeProximity(card, x, y));
     setCursorAngle(getCursorAngle(card, x, y));
   }, [getEdgeProximity, getCursorAngle]);
 
   useEffect(() => {
     if (!animated) return;
-    const angleStart = 110;
-    const angleEnd = 465;
-    setSweepActive(true);
-    setCursorAngle(angleStart);
-
+    const angleStart = 110; const angleEnd = 465;
+    setSweepActive(true); setCursorAngle(angleStart);
     animateValue({ duration: 500, onUpdate: v => setEdgeProximity(v / 100) });
     animateValue({ ease: easeInCubic, duration: 1500, end: 50, onUpdate: v => {
       setCursorAngle((angleEnd - angleStart) * (v / 100) + angleStart);
@@ -146,16 +126,12 @@ export default function NtaButton({
       onUpdate: v => setEdgeProximity(v / 100),
       onEnd: () => setSweepActive(false),
     });
-  }, [animated]);
+  }, [animated]); // <-- PERBAIKAN DI SINI: id dihapus
 
   const colorSensitivity = edgeSensitivity + 20;
   const isVisible = isHovered || sweepActive;
-  const borderOpacity = isVisible
-    ? Math.max(0, (edgeProximity * 100 - colorSensitivity) / (100 - colorSensitivity))
-    : 0;
-  const glowOpacity = isVisible
-    ? Math.max(0, (edgeProximity * 100 - edgeSensitivity) / (100 - edgeSensitivity))
-    : 0;
+  const borderOpacity = isVisible ? Math.max(0, (edgeProximity * 100 - colorSensitivity) / (100 - colorSensitivity)) : 0;
+  const glowOpacity = isVisible ? Math.max(0, (edgeProximity * 100 - edgeSensitivity) / (100 - edgeSensitivity)) : 0;
 
   const meshGradients = buildMeshGradients(colors);
   const borderBg = meshGradients.map(g => `${g} border-box`);
@@ -163,110 +139,149 @@ export default function NtaButton({
   const angleDeg = `${cursorAngle.toFixed(3)}deg`;
 
   return (
-    <>
-      {/* [DOC-ONLY] */}
-      <div className="flex items-center justify-center p-12">
-      {/* [/DOC-ONLY] */}
+    <div
+      ref={cardRef}
+      onPointerMove={handlePointerMove}
+      onPointerEnter={() => setIsHovered(true)}
+      onPointerLeave={() => setIsHovered(false)}
+      style={{
+        position: 'relative',
+        display: 'inline-grid',
+        isolation: 'isolate',
+        border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+        overflow: 'hidden',
+        background: backgroundColor,
+        borderRadius: `${borderRadius}px`,
+        transform: 'translate3d(0, 0, 0.01px)',
+        boxShadow: isDarkMode 
+          ? 'rgba(0,0,0,0.3) 0 4px 12px' 
+          : 'rgba(0,0,0,0.05) 0 4px 12px',
+      }}
+    >
+      {/* mesh gradient border */}
+      <div style={{
+        position: 'absolute', inset: 0, borderRadius: 'inherit', zIndex: -1,
+        border: '1px solid transparent',
+        background: [`linear-gradient(${backgroundColor} 0 100%) padding-box`, 'linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box', ...borderBg].join(', '),
+        opacity: borderOpacity,
+        maskImage: `conic-gradient(from ${angleDeg} at center, black ${coneSpread}%, transparent ${coneSpread + 15}%, transparent ${100 - coneSpread - 15}%, black ${100 - coneSpread}%)`,
+        WebkitMaskImage: `conic-gradient(from ${angleDeg} at center, black ${coneSpread}%, transparent ${coneSpread + 15}%, transparent ${100 - coneSpread - 15}%, black ${100 - coneSpread}%)`,
+        transition: isVisible ? 'opacity 0.25s ease-out' : 'opacity 0.75s ease-in-out',
+      }} />
 
-        <div
-          ref={cardRef}
-          onPointerMove={handlePointerMove}
-          onPointerEnter={() => setIsHovered(true)}
-          onPointerLeave={() => setIsHovered(false)}
-          className="relative grid isolate border border-white/15 overflow-hidden"
+      {/* mesh gradient fill */}
+      <div style={{
+        position: 'absolute', inset: 0, borderRadius: 'inherit', zIndex: -1,
+        border: '1px solid transparent',
+        background: fillBg.join(', '),
+        opacity: borderOpacity * fillOpacity,
+        mixBlendMode: isDarkMode ? 'soft-light' : 'multiply',
+        transition: isVisible ? 'opacity 0.25s ease-out' : 'opacity 0.75s ease-in-out',
+      }} />
+
+      {/* outer glow */}
+      <span style={{
+        position: 'absolute', pointerEvents: 'none', zIndex: 1, borderRadius: 'inherit',
+        inset: `${-glowRadius}px`,
+        maskImage: `conic-gradient(from ${angleDeg} at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
+        WebkitMaskImage: `conic-gradient(from ${angleDeg} at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
+        opacity: glowOpacity,
+        mixBlendMode: isDarkMode ? 'plus-lighter' : 'multiply',
+        transition: isVisible ? 'opacity 0.25s ease-out' : 'opacity 0.75s ease-in-out',
+      }}>
+        <span style={{
+          position: 'absolute', borderRadius: 'inherit',
+          inset: `${glowRadius}px`,
+          boxShadow: buildBoxShadow(glowColor, glowIntensity),
+        }} />
+      </span>
+
+      {/* button content */}
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <motion.button
+          whileTap={{ scale: 0.96 }}
+          onClick={onClick}
           style={{
-            background: backgroundColor,
-            borderRadius: `${borderRadius}px`,
-            transform: 'translate3d(0, 0, 0.01px)',
-            boxShadow: 'rgba(0,0,0,0.1) 0 1px 2px, rgba(0,0,0,0.1) 0 2px 4px, rgba(0,0,0,0.1) 0 4px 8px, rgba(0,0,0,0.1) 0 8px 16px, rgba(0,0,0,0.1) 0 16px 32px, rgba(0,0,0,0.1) 0 32px 64px',
+            padding: '12px 32px',
+            width: '100%',
+            borderRadius: 'inherit',
+            fontWeight: '700',
+            backgroundColor: 'transparent',
+            color: isDarkMode ? 'white' : '#1a1a1a',
+            border: 'none', outline: 'none', cursor: 'pointer',
+            fontSize: '14px',
+            letterSpacing: '0.02em'
           }}
         >
-          {/* mesh gradient border */}
-          <div
-            className="absolute inset-0 rounded-[inherit] -z-[1]"
-            style={{
-              border: '1px solid transparent',
-              background: [
-                `linear-gradient(${backgroundColor} 0 100%) padding-box`,
-                'linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box',
-                ...borderBg,
-              ].join(', '),
-              opacity: borderOpacity,
-              maskImage: `conic-gradient(from ${angleDeg} at center, black ${coneSpread}%, transparent ${coneSpread + 15}%, transparent ${100 - coneSpread - 15}%, black ${100 - coneSpread}%)`,
-              WebkitMaskImage: `conic-gradient(from ${angleDeg} at center, black ${coneSpread}%, transparent ${coneSpread + 15}%, transparent ${100 - coneSpread - 15}%, black ${100 - coneSpread}%)`,
-              transition: isVisible ? 'opacity 0.25s ease-out' : 'opacity 0.75s ease-in-out',
-            }}
-          />
-
-          {/* mesh gradient fill near edges */}
-          <div
-            className="absolute inset-0 rounded-[inherit] -z-[1]"
-            style={{
-              border: '1px solid transparent',
-              background: fillBg.join(', '),
-              maskImage: [
-                'linear-gradient(to bottom, black, black)',
-                'radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%)',
-                'radial-gradient(ellipse at 66% 66%, black 5%, transparent 40%)',
-                'radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%)',
-                'radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%)',
-                'radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%)',
-                `conic-gradient(from ${angleDeg} at center, transparent 5%, black 15%, black 85%, transparent 95%)`,
-              ].join(', '),
-              WebkitMaskImage: [
-                'linear-gradient(to bottom, black, black)',
-                'radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%)',
-                'radial-gradient(ellipse at 66% 66%, black 5%, transparent 40%)',
-                'radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%)',
-                'radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%)',
-                'radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%)',
-                `conic-gradient(from ${angleDeg} at center, transparent 5%, black 15%, black 85%, transparent 95%)`,
-              ].join(', '),
-              maskComposite: 'subtract, add, add, add, add, add',
-              WebkitMaskComposite: 'source-out, source-over, source-over, source-over, source-over, source-over',
-              opacity: borderOpacity * fillOpacity,
-              mixBlendMode: 'soft-light',
-              transition: isVisible ? 'opacity 0.25s ease-out' : 'opacity 0.75s ease-in-out',
-            }}
-          />
-
-          {/* outer glow */}
-          <span
-            className="absolute pointer-events-none z-[1] rounded-[inherit]"
-            style={{
-              inset: `${-glowRadius}px`,
-              maskImage: `conic-gradient(from ${angleDeg} at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
-              WebkitMaskImage: `conic-gradient(from ${angleDeg} at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
-              opacity: glowOpacity,
-              mixBlendMode: 'plus-lighter',
-              transition: isVisible ? 'opacity 0.25s ease-out' : 'opacity 0.75s ease-in-out',
-            }}
-          >
-            <span
-              className="absolute rounded-[inherit]"
-              style={{
-                inset: `${glowRadius}px`,
-                boxShadow: buildBoxShadow(glowColor, glowIntensity),
-              }}
-            />
-          </span>
-
-          {/* button content */}
-          <div className="flex flex-col relative overflow-auto z-[1]">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={onClick}
-              className="px-8 py-3 w-full h-full rounded-xl font-bold transition-colors bg-transparent text-white relative z-10 border-none outline-none cursor-pointer"
-              style={{ backgroundColor: 'transparent' }}
-            >
-              {text}
-            </motion.button>
-          </div>
-        </div>
-
-      {/* [DOC-ONLY] */}
+          {text}
+        </motion.button>
       </div>
-      {/* [/DOC-ONLY] */}
-    </>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   HALAMAN UTAMA (Showcase)
+───────────────────────────────────────────── */
+export default function App() {
+  const { isDarkMode } = useContext(ThemeContext);
+
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center py-12 px-6 gap-14 font-sans bg-transparent">
+      
+      
+
+      {/* Buttons Grid */}
+      <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 max-w-2xl mx-auto w-full">
+        
+        {/* Cyberpunk Neon */}
+        <NtaButton
+          text="System Access"
+          animated={true}
+          backgroundColor={isDarkMode ? "#0a0a12" : "#fdf2ff"}
+          glowColor={isDarkMode ? "300 100 60" : "300 80 80"}
+          colors={['#ff00ff', '#00ffff', '#ff00aa']}
+          glowIntensity={isDarkMode ? 1.2 : 0.6}
+          glowRadius={50}
+        />
+
+        {/* Aurora Borealis */}
+        <NtaButton
+          text="Explore Aurora"
+          backgroundColor={isDarkMode ? "#0f172a" : "#f0fff4"}
+          glowColor={isDarkMode ? "160 80 50" : "160 60 70"}
+          colors={['#34d399', '#818cf8', '#2dd4bf']}
+          glowIntensity={isDarkMode ? 0.6 : 0.4}
+        />
+
+        {/* Royal Gold */}
+        <NtaButton
+          text="Premium Access"
+          backgroundColor={isDarkMode ? "#1c1917" : "#fffbeb"}
+          glowColor={isDarkMode ? "45 90 55" : "45 70 75"}
+          colors={['#fbbf24', '#f97316', '#fef3c7']}
+          glowIntensity={isDarkMode ? 1.5 : 0.7}
+          borderRadius={20}
+        />
+
+        {/* Blood Moon */}
+        <NtaButton
+          text="Enter Sanctum"
+          backgroundColor={isDarkMode ? "#1a0a0a" : "#fff5f5"}
+          glowColor={isDarkMode ? "0 90 50" : "0 70 80"}
+          colors={['#ef4444', '#f97316', '#dc2626']}
+          edgeSensitivity={50}
+          glowRadius={60}
+        />
+
+        {/* Default Variant */}
+        <NtaButton 
+          text="Default Variant" 
+          backgroundColor={isDarkMode ? "#120F17" : "#f4f4f5"}
+          glowColor={isDarkMode ? "40 80 80" : "40 60 90"}
+        />
+
+      </div>
+    </div>
   );
 }

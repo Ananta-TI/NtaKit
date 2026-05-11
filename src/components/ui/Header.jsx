@@ -140,10 +140,8 @@ export default function Header() {
 
           {/* RIGHT */}
           <div className="flex items-center gap-2">
-            {/* TAMPILKAN SEARCH HANYA DI DOCS AREA (Instalation & Component) */}
             {isDocsArea && (
               <>
-                {/* Search Button untuk Desktop */}
                 <button
                   onClick={() => setIsSearchOpen(true)}
                   className="hidden md:flex items-center justify-between gap-3 px-3 py-1.5 border border-brand-border rounded-lg text-sm text-brand-text/40 hover:text-brand-text hover:bg-brand-surface/30 transition-all bg-brand-surface/10 w-56"
@@ -157,7 +155,6 @@ export default function Header() {
                   </kbd>
                 </button>
 
-                {/* Search Icon untuk Mobile */}
                 <button
                   onClick={() => setIsSearchOpen(true)}
                   className="md:hidden w-8 h-8 flex items-center justify-center border border-brand-border rounded-lg hover:bg-brand-surface/50 transition-colors"
@@ -184,11 +181,10 @@ export default function Header() {
         </div>
       </motion.header>
 
-      {/* ================= SEARCH MODAL (COMMAND PALETTE) ================= */}
+      {/* ================= SEARCH MODAL ================= */}
       <AnimatePresence>
         {isSearchOpen && (
           <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh] px-4 sm:px-6">
-            {/* Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -197,7 +193,6 @@ export default function Header() {
               className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             />
 
-            {/* Modal Box */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: -20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -205,7 +200,6 @@ export default function Header() {
               transition={{ duration: 0.15 }}
               className="relative w-full max-w-lg bg-brand-bg border border-brand-border rounded-2xl shadow-2xl shadow-black/20 overflow-hidden flex flex-col"
             >
-              {/* Search Input */}
               <div className="flex items-center px-4 py-3 border-b border-brand-border bg-brand-surface/10">
                 <Search size={18} className="text-brand-accent mr-3" />
                 <input
@@ -224,7 +218,6 @@ export default function Header() {
                 </button>
               </div>
 
-              {/* Search Results */}
               <div className="max-h-[60vh] overflow-y-auto p-2 custom-scrollbar">
                 {filteredComponents.length > 0 ? (
                   <div className="flex flex-col gap-1">
@@ -262,7 +255,6 @@ export default function Header() {
                 )}
               </div>
               
-              {/* Footer Modal */}
               <div className="px-4 py-2 border-t border-brand-border bg-brand-surface/5 flex items-center justify-between">
                 <span className="text-[10px] text-brand-text/40">
                   <kbd className="border border-brand-border/60 px-1 py-0.5 rounded mr-1">ESC</kbd> to close
@@ -277,7 +269,6 @@ export default function Header() {
       </AnimatePresence>
 
       {/* ================= MOBILE MENU ================= */}
-      {/* ... [KODE MOBILE MENU SAMA SEPERTI JAWABAN SEBELUMNYA] ... */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
@@ -305,34 +296,42 @@ export default function Header() {
                 </button>
               </div>
 
-              {/* NAV */}
+              {/* NAV MOBILE - Dengan Aktif State */}
               <div className="p-4 flex flex-col gap-1">
                 {navLinks.map((l) => (
                   <Link
                     key={l.label}
                     to={l.to}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="px-3 py-2.5 rounded-lg text-sm text-brand-text/70 font-medium hover:text-brand-accent hover:bg-brand-surface/30 transition-all"
+                    className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                      isActive(l)
+                        ? "text-brand-accent bg-brand-accent/10"
+                        : "text-brand-text/70 hover:text-brand-accent hover:bg-brand-surface/30"
+                    }`}
                   >
                     {l.label}
                   </Link>
                 ))}
               </div>
 
-              {/* COMPONENT LIST */}
+              {/* COMPONENT LIST MOBILE - Dengan Aktif State */}
               {isDocsArea && (
-                <div className="p-4 border-t border-brand-border overflow-y-auto custom-scrollbar">
+                <div className="p-4 border-t border-brand-border overflow-y-auto custom-scrollbar flex-1">
                   <p className="text-[10px] font-bold tracking-wider uppercase text-brand-accent mb-3">
                     Components
                   </p>
 
-                  <div className="flex flex-col gap-0.5">
+                  <div className="flex flex-col gap-1">
                     {Object.entries(componentRegistry).map(([key, data]) => (
                       <Link
                         key={key}
                         to={`/components/${key}`}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="block px-3 py-2 text-sm text-brand-text/60 hover:text-brand-text hover:bg-brand-surface/30 rounded-lg transition-all"
+                        className={`block px-3 py-2 text-sm rounded-lg transition-all ${
+                          location.pathname === `/components/${key}`
+                            ? "text-brand-accent bg-brand-surface/30 font-semibold"
+                            : "text-brand-text/60 hover:text-brand-text hover:bg-brand-surface/30"
+                        }`}
                       >
                         {data.name}
                       </Link>

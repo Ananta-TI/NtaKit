@@ -4,8 +4,6 @@ import { componentRegistry } from "../registry";
 import { Code2, Eye, RotateCcw, Heart, Copy, Check, Terminal } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import CodeBox from "../components/ui/CodeBox";
-import Sidebar from "../components/ui/Sidebar";
-import PromoSidebar from "../components/ui/PromoSidebar";
 import { getCleanCode } from "../utils/cleaner";
 import generatedProps from "../generated-props.json";
 import { extractDependencies } from "../utils/extractDependencies";
@@ -16,8 +14,10 @@ export default function ComponentPage() {
   const [installMethod, setInstallMethod] = useState("cli");
   const [pkgManager, setPkgManager] = useState("npm");
   const [copiedInstall, setCopiedInstall] = useState(false);
-  const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [componentProps, setComponentProps] = useState({});
+  
+  // State baru untuk me-refresh komponen
+  const [previewKey, setPreviewKey] = useState(0);
 
   const componentData = componentRegistry[id];
 
@@ -49,195 +49,198 @@ export default function ComponentPage() {
   }), [id]);
 
   return (
-    <div className="flex min-h-screen bg-brand-bg text-brand-text">
-      <Sidebar />
+    <div className="w-full max-w-7xl mx-auto flex flex-col">
+      
+      {/* Header */}
+      <div className="mb-8 w-full">
+        <h1 className="text-3xl md:text-5xl font-black tracking-tighter uppercase mb-6 break-words">
+          {componentData.name}
+        </h1>
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+          <div className="flex p-0.5 bg-brand-surface/20 rounded-lg border border-brand-border w-fit">
+            <button onClick={() => setActiveTab("preview")} className={`flex items-center justify-center gap-1.5 px-5 py-2 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${activeTab === "preview" ? "bg-brand-surface text-brand-accent" : "text-brand-text/35 hover:text-brand-text"}`}>
+              <Eye size={13} /> Preview
+            </button>
+            <button onClick={() => setActiveTab("code")} className={`flex items-center justify-center gap-1.5 px-5 py-2 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${activeTab === "code" ? "bg-brand-surface text-brand-accent" : "text-brand-text/35 hover:text-brand-text"}`}>
+              <Code2 size={13} /> Code
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="p-2.5 rounded-lg border border-brand-border text-brand-text/30 hover:text-red-400 transition-all">
+              <Heart size={16} />
+            </button>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(installCommands[pkgManager]);
+                setCopiedInstall(true);
+                setTimeout(() => setCopiedInstall(false), 2000);
+              }} 
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg border border-brand-border text-[10px] font-semibold hover:bg-brand-surface/30 transition-all whitespace-nowrap"
+            >
+              {copiedInstall ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
+              {copiedInstall ? "Copied" : "Copy Install Command"}
+            </button>
+          </div>
+        </div>
+      </div>
 
-      <main className="flex-1 min-w-0 md:ml-56 xl:mr-64 px-4 md:px-8 lg:px-10 pb-8 pt-24 overflow-x-hidden">
-        <div className="max-w-5xl mx-auto w-full">
-
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-5xl font-black tracking-tighter uppercase mb-6 break-words">
-              {componentData.name}
-            </h1>
-            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
-              <div className="flex p-0.5 bg-brand-surface/20 rounded-lg border border-brand-border w-fit">
-                <button onClick={() => setActiveTab("preview")} className={`flex items-center justify-center gap-1.5 px-5 py-2 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${activeTab === "preview" ? "bg-brand-surface text-brand-accent" : "text-brand-text/35 hover:text-brand-text"}`}>
-                  <Eye size={13} /> Preview
-                </button>
-                <button onClick={() => setActiveTab("code")} className={`flex items-center justify-center gap-1.5 px-5 py-2 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${activeTab === "code" ? "bg-brand-surface text-brand-accent" : "text-brand-text/35 hover:text-brand-text"}`}>
-                  <Code2 size={13} /> Code
-                </button>
-              </div>
-              <div className="flex items-center gap-2">
-                <button className="p-2.5 rounded-lg border border-brand-border text-brand-text/30 hover:text-red-400 transition-all">
-                  <Heart size={16} />
-                </button>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(installCommands[pkgManager]);
-                    setCopiedInstall(true);
-                    setTimeout(() => setCopiedInstall(false), 2000);
-                  }} 
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg border border-brand-border text-[10px] font-semibold hover:bg-brand-surface/30 transition-all whitespace-nowrap"
-                >
-                  {copiedInstall ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
-                  {copiedInstall ? "Copied" : "Copy Install Command"}
-                </button>
+      {/* Tabs */}
+      <AnimatePresence mode="wait">
+        {activeTab === "preview" ? (
+          <motion.div key="p" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }} className="w-full">
+            
+              {/* Tombol Refresh yang sudah berfungsi */}
+              <button 
+                onClick={() => setPreviewKey(prev => prev + 1)}
+                className="relative  top-10 left-305 z-20 p-2 bg-brand-bg/70 border border-brand-border rounded-lg hover:bg-brand-accent hover:text-brand-bg transition-all backdrop-blur-sm active:scale-95"
+                title="Re-render component"
+              >
+                <RotateCcw size={14} />
+              </button>
+            {/* PREVIEW BOX */}
+            <div className="relative w-full overflow-y-auto rounded-xl border border-brand-border bg-brand-surface/20 overflow-hidden mb-10 min-h-[450px] sm:min-h-[500px] lg:min-h-[600px] flex items-center justify-center">
+              
+              
+              {/* Wrapper komponen dengan key dinamis */}
+              <div key={previewKey} className="w-full h-full absolute inset-0 overflow-y-auto overflow-x-hidden custom-scrollbar">
+                <div className="w-full min-h-full flex flex-col items-center py-10 relative">
+                  <SelectedComponent {...componentProps} />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Tabs */}
-          <AnimatePresence mode="wait">
-            {activeTab === "preview" ? (
-              <motion.div key="p" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }}>
-                
-                {/* PREVIEW BOX YANG SUDAH DIPERBAIKI */}
-                <div className="relative w-full rounded-xl border border-brand-border bg-brand-surface/20 overflow-hidden mb-10 min-h-[400px] sm:min-h-[500px] flex items-center justify-center p-4 sm:p-8 md:p-12">
-                  <button className="absolute top-3 right-3 z-20 p-2 bg-brand-bg/70 border border-brand-border rounded-lg hover:bg-brand-accent hover:text-brand-bg transition-all backdrop-blur-sm">
-                    <RotateCcw size={14} />
-                  </button>
-                  
-                  {/* Wrapper komponen murni w-full tanpa scroll bar */}
-                  <div className="w-full max-w-3xl flex justify-center items-center">
-                    <div className="w-full">
-                      <SelectedComponent {...componentProps} />
+            {/* Controls */}
+            {componentData.controls && componentData.controls.length > 0 && (
+              <section className="mb-10 w-full">
+                <h2 className="text-lg font-bold mb-4 tracking-tight">Customize</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-5 bg-brand-surface/15 border border-brand-border rounded-xl">
+                  {componentData.controls.map((c) => (
+                    <div key={c.name} className="flex flex-col gap-1.5 min-w-0">
+                      <label className="text-[10px] font-medium uppercase text-brand-text/30 tracking-wider truncate">{c.label}</label>
+                      <input className="w-full bg-brand-bg/50 border border-brand-border rounded-lg px-3 py-2.5 text-sm outline-none focus:border-brand-accent/30 transition-colors" value={componentProps[c.name] || ""} onChange={(e) => setComponentProps({ ...componentProps, [c.name]: e.target.value })} />
                     </div>
-                  </div>
+                  ))}
                 </div>
+              </section>
+            )}
 
-                {/* Controls */}
-                {componentData.controls && componentData.controls.length > 0 && (
-                  <section className="mb-10 w-full">
-                    <h2 className="text-lg font-bold mb-4 tracking-tight">Customize</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-5 bg-brand-surface/15 border border-brand-border rounded-xl">
-                      {componentData.controls.map((c) => (
-                        <div key={c.name} className="flex flex-col gap-1.5 min-w-0">
-                          <label className="text-[10px] font-medium uppercase text-brand-text/30 tracking-wider truncate">{c.label}</label>
-                          <input className="w-full bg-brand-bg/50 border border-brand-border rounded-lg px-3 py-2.5 text-sm outline-none focus:border-brand-accent/30 transition-colors" value={componentProps[c.name] || ""} onChange={(e) => setComponentProps({ ...componentProps, [c.name]: e.target.value })} />
-                        </div>
-                      ))}
+            {/* Props Table */}
+            <section className="mb-10 w-full overflow-hidden">
+              <h2 className="text-lg font-bold mb-4 tracking-tight">Props</h2>
+              <div className="border border-brand-border rounded-xl bg-brand-surface/10 overflow-hidden w-full">
+                <div className="overflow-x-auto custom-scrollbar w-full">
+                  <table className="w-full text-left text-sm min-w-[600px]">
+                    <thead className="bg-brand-surface/20 border-b border-brand-border text-brand-text/40 text-[10px] font-semibold uppercase tracking-wider">
+                      <tr>
+                        <th className="px-5 py-3.5">Prop</th>
+                        <th className="px-5 py-3.5">Type</th>
+                        <th className="px-5 py-3.5">Default</th>
+                        <th className="px-5 py-3.5">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-brand-border/50">
+                      {propsTable.length > 0 ? propsTable.map((p) => (
+                        <tr key={p.name} className="hover:bg-brand-accent/3 transition-colors">
+                          <td className="px-5 py-3 text-brand-accent font-mono text-xs font-medium">{p.name}</td>
+                          <td className="px-5 py-3 text-brand-text/50 font-mono text-[10px] uppercase">{p.type}</td>
+                          <td className="px-5 py-3 font-mono text-[10px]">
+                            <code className="bg-brand-bg/40 px-1.5 py-0.5 rounded text-brand-text/50 whitespace-nowrap">{p.default === "--" ? p.default : `"${p.default}"`}</code>
+                          </td>
+                          <td className="px-5 py-3 text-[11px] text-brand-text/35 leading-relaxed">{p.desc}</td>
+                        </tr>
+                      )) : (
+                        <tr><td colSpan="4" className="px-5 py-10 text-center text-brand-text/20 text-xs font-mono">No props</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+            
+            {/* Dependencies */}
+            <section className="mb-10 w-full">
+              <h2 className="text-lg font-bold mb-4 tracking-tight">
+                Dependencies
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {dependencies.length > 0 ? (
+                  dependencies.map((dep) => (
+                    <div
+                      key={dep}
+                      className="px-3 py-2 rounded-lg border border-brand-border bg-brand-surface/15 text-xs font-mono text-brand-accent break-all"
+                    >
+                      {dep}
                     </div>
-                  </section>
+                  ))
+                ) : (
+                  <p className="text-xs text-brand-text/30">
+                    No external dependencies.
+                  </p>
                 )}
-
-                {/* Props Table */}
-                <section className="mb-10 w-full overflow-hidden">
-                  <h2 className="text-lg font-bold mb-4 tracking-tight">Props</h2>
-                  <div className="border border-brand-border rounded-xl bg-brand-surface/10 overflow-hidden w-full">
-                    <div className="overflow-x-auto custom-scrollbar w-full">
-                      <table className="w-full text-left text-sm min-w-[600px]">
-                        <thead className="bg-brand-surface/20 border-b border-brand-border text-brand-text/40 text-[10px] font-semibold uppercase tracking-wider">
-                          <tr>
-                            <th className="px-5 py-3.5">Prop</th>
-                            <th className="px-5 py-3.5">Type</th>
-                            <th className="px-5 py-3.5">Default</th>
-                            <th className="px-5 py-3.5">Description</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-brand-border/50">
-                          {propsTable.length > 0 ? propsTable.map((p) => (
-                            <tr key={p.name} className="hover:bg-brand-accent/3 transition-colors">
-                              <td className="px-5 py-3 text-brand-accent font-mono text-xs font-medium">{p.name}</td>
-                              <td className="px-5 py-3 text-brand-text/50 font-mono text-[10px] uppercase">{p.type}</td>
-                              <td className="px-5 py-3 font-mono text-[10px]">
-                                <code className="bg-brand-bg/40 px-1.5 py-0.5 rounded text-brand-text/50 whitespace-nowrap">{p.default === "--" ? p.default : `"${p.default}"`}</code>
-                              </td>
-                              <td className="px-5 py-3 text-[11px] text-brand-text/35 leading-relaxed">{p.desc}</td>
-                            </tr>
-                          )) : (
-                            <tr><td colSpan="4" className="px-5 py-10 text-center text-brand-text/20 text-xs font-mono">No props</td></tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </section>
-                
-                <section className="mb-10">
-                  <h2 className="text-lg font-bold mb-4 tracking-tight">
-                    Dependencies
-                  </h2>
-                  <div className="flex flex-wrap gap-2">
-                    {dependencies.length > 0 ? (
-                      dependencies.map((dep) => (
-                        <div
-                          key={dep}
-                          className="px-3 py-2 rounded-lg border border-brand-border bg-brand-surface/15 text-xs font-mono text-brand-accent break-all"
-                        >
-                          {dep}
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-xs text-brand-text/30">
-                        No external dependencies.
-                      </p>
-                    )}
-                  </div>
-                </section>
-              </motion.div>
-            ) : (
-              <motion.div key="c" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }} className="w-full">
-                {/* Install */}
-                <section className="mb-10 w-full">
-                  <h2 className="text-lg font-bold mb-4 tracking-tight">Installation</h2>
-                  <div className="flex gap-0.5 p-0.5 bg-brand-surface/20 border border-brand-border rounded-lg w-fit mb-4">
-                    {["cli", "manual"].map((m) => (
-                      <button key={m} onClick={() => setInstallMethod(m)} className={`px-4 py-1.5 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${installMethod === m ? "bg-brand-surface text-brand-accent" : "text-brand-text/35 hover:text-brand-text"}`}>{m}</button>
+              </div>
+            </section>
+          </motion.div>
+        ) : (
+          <motion.div key="c" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }} className="w-full">
+            
+            {/* Install */}
+            <section className="mb-10 w-full">
+              <h2 className="text-lg font-bold mb-4 tracking-tight">Installation</h2>
+              <div className="flex gap-0.5 p-0.5 bg-brand-surface/20 border border-brand-border rounded-lg w-fit mb-4">
+                {["cli", "manual"].map((m) => (
+                  <button key={m} onClick={() => setInstallMethod(m)} className={`px-4 py-1.5 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${installMethod === m ? "bg-brand-surface text-brand-accent" : "text-brand-text/35 hover:text-brand-text"}`}>{m}</button>
+                ))}
+              </div>
+              {installMethod === "cli" ? (
+                <div className="bg-brand-surface/15 border border-brand-border rounded-xl overflow-hidden w-full">
+                  <div className="flex overflow-x-auto bg-brand-surface/20 px-2 py-2 gap-0.5 border-b border-brand-border custom-scrollbar">
+                    {["npm", "pnpm", "yarn", "bun"].map((p) => (
+                      <button key={p} onClick={() => setPkgManager(p)} className={`px-3 py-1 rounded-md text-[10px] font-semibold transition-colors flex-shrink-0 ${pkgManager === p ? "bg-brand-surface text-brand-accent" : "text-brand-text/25 hover:text-brand-text/50"}`}>{p}</button>
                     ))}
                   </div>
-                  {installMethod === "cli" ? (
-                    <div className="bg-brand-surface/15 border border-brand-border rounded-xl overflow-hidden w-full">
-                      <div className="flex overflow-x-auto bg-brand-surface/20 px-2 py-2 gap-0.5 border-b border-brand-border custom-scrollbar">
-                        {["npm", "pnpm", "yarn", "bun"].map((p) => (
-                          <button key={p} onClick={() => setPkgManager(p)} className={`px-3 py-1 rounded-md text-[10px] font-semibold transition-colors flex-shrink-0 ${pkgManager === p ? "bg-brand-surface text-brand-accent" : "text-brand-text/25 hover:text-brand-text/50"}`}>{p}</button>
-                        ))}
-                      </div>
-                      <div className="p-3 sm:p-4 font-mono text-[12px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
-                        <div className="flex items-center gap-3 w-full min-w-0">
-                          <Terminal size={14} className="text-brand-text/20 flex-shrink-0 hidden sm:block" />
-                          <div className="w-full overflow-x-auto custom-scrollbar pb-1 sm:pb-0">
-                            <code className="text-brand-text/70 text-[11px] whitespace-nowrap">
-                              {installCommands[pkgManager]}
-                            </code>
-                          </div>
-                        </div>
-                        <button onClick={() => { navigator.clipboard.writeText(installCommands[pkgManager]); setCopiedInstall(true); setTimeout(() => setCopiedInstall(false), 2000); }} className="p-2 sm:p-1.5 w-full sm:w-auto rounded-md border border-brand-border text-brand-text/30 hover:text-brand-accent transition-colors flex-shrink-0 flex items-center justify-center gap-2">
-                          {copiedInstall ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
-                          <span className="text-[10px] sm:hidden">{copiedInstall ? "Copied" : "Copy"}</span>
-                        </button>
+                  <div className="p-3 sm:p-4 font-mono text-[12px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+                    <div className="flex items-center gap-3 w-full min-w-0">
+                      <Terminal size={14} className="text-brand-text/20 flex-shrink-0 hidden sm:block" />
+                      <div className="w-full overflow-x-auto custom-scrollbar pb-1 sm:pb-0">
+                        <code className="text-brand-text/70 text-[11px] whitespace-nowrap">
+                          {installCommands[pkgManager]}
+                        </code>
                       </div>
                     </div>
-                  ) : (
-                    <div className="p-5 bg-brand-surface/15 border border-brand-border rounded-xl text-xs text-brand-text/40 leading-relaxed">
-                      Copy source code below and save as <code className="text-brand-accent font-mono bg-brand-bg/30 px-1.5 py-0.5 rounded whitespace-nowrap">{id}.jsx</code>
-                    </div>
-                  )}
-                </section>
+                    <button onClick={() => { navigator.clipboard.writeText(installCommands[pkgManager]); setCopiedInstall(true); setTimeout(() => setCopiedInstall(false), 2000); }} className="p-2 sm:p-1.5 w-full sm:w-auto rounded-md border border-brand-border text-brand-text/30 hover:text-brand-accent transition-colors flex-shrink-0 flex items-center justify-center gap-2">
+                      {copiedInstall ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
+                      <span className="text-[10px] sm:hidden">{copiedInstall ? "Copied" : "Copy"}</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-5 bg-brand-surface/15 border border-brand-border rounded-xl text-xs text-brand-text/40 leading-relaxed">
+                  Copy source code below and save as <code className="text-brand-accent font-mono bg-brand-bg/30 px-1.5 py-0.5 rounded whitespace-nowrap">{id}.jsx</code>
+                </div>
+              )}
+            </section>
 
-                {/* Usage */}
-                <section className="mb-10 w-full overflow-hidden">
-                  <h2 className="text-lg font-bold mb-4 tracking-tight">Usage</h2>
-                  <CodeBox code={componentData.usage} hideHeader expandable={false} />
-                </section>
+            {/* Usage */}
+            <section className="mb-10 w-full overflow-hidden">
+              <h2 className="text-lg font-bold mb-4 tracking-tight">Usage</h2>
+              <CodeBox code={componentData.usage} hideHeader expandable={false} />
+            </section>
 
-                {/* Source */}
-                <section className="w-full overflow-hidden">
-                  <h2 className="text-lg font-bold mb-4 tracking-tight">Source Code</h2>
-                  <CodeBox code={cleanedCode} />
-                </section>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            {/* Source */}
+            <section className="w-full overflow-hidden">
+              <h2 className="text-lg font-bold mb-4 tracking-tight">Source Code</h2>
+              <CodeBox code={cleanedCode} />
+            </section>
+            
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          <footer className="mt-20 py-6 border-t border-brand-border/40 text-center">
-            <p className="text-[9px] font-mono text-brand-text/15 uppercase tracking-[0.3em]">NtaKit © 2026 · Ananta Firdaus</p>
-          </footer>
-        </div>
-      </main>
-
-      <PromoSidebar />
+      {/* Footer */}
+      <footer className="mt-20 py-6 border-t border-brand-border/40 text-center w-full">
+        <p className="text-[9px] font-mono text-brand-text/15 uppercase tracking-[0.3em]">NtaKit © 2026 · Ananta Firdaus</p>
+      </footer>
+      
     </div>
   );
 }
