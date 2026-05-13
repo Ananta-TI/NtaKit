@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import GithubIsometric from "./GithubIsometric";
 import NtaButton from "./NtaButton";
 import NtaSpotlightGrid from "./SpotlightGrid";
-import ContactForm from "./ContactForm";
+// import ContactForm from "./ContactForm";
 
 const handleFormSubmit = async (formData) => {
     console.log("Data yang dikirim:", formData);
