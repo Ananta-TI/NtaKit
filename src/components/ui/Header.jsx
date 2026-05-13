@@ -33,7 +33,7 @@ const navLinks = [
   },
   {
     label: "Components",
-    to: firstComponentKey ? `/components/${firstComponentKey}` : "/installation",
+    to:  "/installation",
     match: (p) => p.startsWith("/installation") || p.startsWith("/components"),
     icon: Layers,
   },
