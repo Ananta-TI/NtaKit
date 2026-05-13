@@ -1,7 +1,16 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { componentRegistry } from "../registry";
-import { Code2, Eye, RotateCcw, Heart, Copy, Check, Terminal } from "lucide-react";
+import {
+  Code2,
+  Eye,
+  RotateCcw,
+  Copy,
+  Check,
+  Terminal,
+  Package,
+  SlidersHorizontal,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import CodeBox from "../components/ui/CodeBox";
 import { getCleanCode } from "../utils/cleaner";
@@ -10,13 +19,12 @@ import { extractDependencies } from "../utils/extractDependencies";
 
 export default function ComponentPage() {
   const { id } = useParams();
+
   const [activeTab, setActiveTab] = useState("preview");
   const [installMethod, setInstallMethod] = useState("cli");
   const [pkgManager, setPkgManager] = useState("npm");
   const [copiedInstall, setCopiedInstall] = useState(false);
   const [componentProps, setComponentProps] = useState({});
-  
-  // State baru untuk me-refresh komponen
   const [previewKey, setPreviewKey] = useState(0);
 
   const componentData = componentRegistry[id];
@@ -25,112 +33,220 @@ export default function ComponentPage() {
     return extractDependencies(componentData?.code || "");
   }, [componentData]);
 
-  useEffect(() => {
-    if (componentData?.defaultProps) setComponentProps(componentData.defaultProps);
-    setActiveTab("preview");
-    window.scrollTo(0, 0);
-  }, [id, componentData]);
-
-  const cleanedCode = useMemo(() => getCleanCode(componentData?.code || ""), [componentData]);
+  const cleanedCode = useMemo(() => {
+    return getCleanCode(componentData?.code || "");
+  }, [componentData]);
 
   const propsTable = useMemo(() => {
     if (componentData?.propsTable) return componentData.propsTable;
     return generatedProps[id] || [];
   }, [id, componentData]);
 
-  if (!componentData) return <div className="p-10 text-brand-text text-sm pt-24">Component not found.</div>;
+  const installCommands = useMemo(
+    () => ({
+      npm: `npx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
+      pnpm: `pnpm dlx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
+      yarn: `yarn dlx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
+      bun: `bunx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
+    }),
+    [id]
+  );
+
+  useEffect(() => {
+    if (componentData?.defaultProps) {
+      setComponentProps(componentData.defaultProps);
+    } else {
+      setComponentProps({});
+    }
+
+    setActiveTab("preview");
+    setPreviewKey((prev) => prev + 1);
+    window.scrollTo(0, 0);
+  }, [id, componentData]);
+
+  const copyText = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedInstall(true);
+      setTimeout(() => setCopiedInstall(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy:", error);
+    }
+  };
+
+  if (!componentData) {
+    return (
+      <div className="rounded-2xl border border-brand-border bg-brand-surface/20 p-8 text-sm text-brand-text">
+        Component not found.
+      </div>
+    );
+  }
 
   const SelectedComponent = componentData.component;
-  const installCommands = useMemo(() => ({
-    npm: `npx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
-    pnpm: `pnpm dlx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
-    yarn: `yarn dlx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
-    bun: `bunx jsrepo@latest add github/Ananta-TI/NtaKit/${id}`,
-  }), [id]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto flex flex-col">
-      
-      {/* Header */}
-      <div className="mb-8 w-full">
-        <h1 className="text-3xl md:text-5xl font-black tracking-tighter uppercase mb-6 break-words">
-          {componentData.name}
-        </h1>
-        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
-          <div className="flex p-0.5 bg-brand-surface/20 rounded-lg border border-brand-border w-fit">
-            <button onClick={() => setActiveTab("preview")} className={`flex items-center justify-center gap-1.5 px-5 py-2 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${activeTab === "preview" ? "bg-brand-surface text-brand-accent" : "text-brand-text/35 hover:text-brand-text"}`}>
-              <Eye size={13} /> Preview
-            </button>
-            <button onClick={() => setActiveTab("code")} className={`flex items-center justify-center gap-1.5 px-5 py-2 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${activeTab === "code" ? "bg-brand-surface text-brand-accent" : "text-brand-text/35 hover:text-brand-text"}`}>
-              <Code2 size={13} /> Code
-            </button>
+    <div className="flex w-full flex-col">
+      {/* ================= HEADER ================= */}
+      <div className="mb-10 border-b border-brand-border pb-8">
+        <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.22em] text-brand-accent">
+          Components / Preview
+        </p>
+
+        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <div>
+            <h1 className="max-w-4xl break-words text-[clamp(2.4rem,6vw,5.5rem)] font-semibold leading-[0.95] tracking-[-0.06em] text-brand-text">
+              {componentData.name}
+            </h1>
+
+            {componentData.description && (
+              <p className="mt-5 max-w-2xl text-[15px] leading-[1.65] text-brand-text/60">
+                {componentData.description}
+              </p>
+            )}
           </div>
-          <div className="flex items-center gap-2">
-            <button className="p-2.5 rounded-lg border border-brand-border text-brand-text/30 hover:text-red-400 transition-all">
-              <Heart size={16} />
-            </button>
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(installCommands[pkgManager]);
-                setCopiedInstall(true);
-                setTimeout(() => setCopiedInstall(false), 2000);
-              }} 
-              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg border border-brand-border text-[10px] font-semibold hover:bg-brand-surface/30 transition-all whitespace-nowrap"
-            >
-              {copiedInstall ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
-              {copiedInstall ? "Copied" : "Copy Install Command"}
-            </button>
-          </div>
+
+          <button
+            onClick={() => copyText(installCommands[pkgManager])}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-brand-border bg-brand-surface px-5 text-xs font-semibold uppercase tracking-[0.08em] text-brand-text/70 transition-all hover:border-brand-accent hover:text-brand-accent"
+          >
+            {copiedInstall ? (
+              <Check size={14} className="text-green-400" />
+            ) : (
+              <Copy size={14} />
+            )}
+            {copiedInstall ? "Copied" : "Copy Install"}
+          </button>
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* ================= TOP TABS ================= */}
+      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="flex w-fit rounded-2xl border border-brand-border bg-brand-surface/20 p-1">
+          <button
+            onClick={() => setActiveTab("preview")}
+            className={`flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-all ${
+              activeTab === "preview"
+                ? "bg-brand-accent text-brand-bg"
+                : "text-brand-text/40 hover:text-brand-text"
+            }`}
+          >
+            <Eye size={14} />
+            Preview
+          </button>
+
+          <button
+            onClick={() => setActiveTab("code")}
+            className={`flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-all ${
+              activeTab === "code"
+                ? "bg-brand-accent text-brand-bg"
+                : "text-brand-text/40 hover:text-brand-text"
+            }`}
+          >
+            <Code2 size={14} />
+            Code
+          </button>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {dependencies.length > 0 ? (
+            dependencies.slice(0, 3).map((dep) => (
+              <span
+                key={dep}
+                className="rounded-full border border-brand-border bg-brand-surface/30 px-3 py-1.5 font-mono text-[11px] text-brand-accent"
+              >
+                {dep}
+              </span>
+            ))
+          ) : (
+            <span className="rounded-full border border-brand-border bg-brand-surface/30 px-3 py-1.5 text-[11px] text-brand-text/45">
+              No external dependencies
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* ================= CONTENT ================= */}
       <AnimatePresence mode="wait">
         {activeTab === "preview" ? (
-          <motion.div key="p" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }} className="w-full">
-            
-              {/* Tombol Refresh yang sudah berfungsi */}
-              <button 
-                onClick={() => setPreviewKey(prev => prev + 1)}
-                className="relative  top-10 left-305 z-20 p-2 bg-brand-bg/70 border border-brand-border rounded-lg hover:bg-brand-accent hover:text-brand-bg transition-all backdrop-blur-sm active:scale-95"
-                title="Re-render component"
-              >
-                <RotateCcw size={14} />
-              </button>
+          <motion.div
+            key="preview"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3 }}
+            className="w-full"
+          >
             {/* PREVIEW BOX */}
-            <div className="relative w-full overflow-y-auto rounded-xl border border-brand-border bg-brand-surface/20 overflow-hidden mb-10 min-h-[450px] sm:min-h-[500px] lg:min-h-[600px] flex items-center justify-center">
-              
-              
-              {/* Wrapper komponen dengan key dinamis */}
-              <div key={previewKey} className="w-full h-full absolute inset-0 overflow-y-auto overflow-x-hidden custom-scrollbar">
-                <div className="w-full min-h-full flex flex-col items-center py-10 relative">
-                  <SelectedComponent {...componentProps} />
-                </div>
-              </div>
-            </div>
+            <div className="relative mb-10 min-h-[450px] w-full overflow-hidden rounded-3xl border border-brand-border bg-brand-surface/20 sm:min-h-[500px] lg:min-h-[600px]">
+  <div className="absolute left-4 top-4 z-20 flex items-center gap-2 rounded-full border border-brand-border bg-brand-bg/80 px-3 py-2 text-[11px] text-brand-text/50 backdrop-blur-sm">
+    <Eye size={13} />
+    Live Preview
+  </div>
 
-            {/* Controls */}
+  <button
+    onClick={() => setPreviewKey((prev) => prev + 1)}
+    className="absolute right-4 top-4 z-20 rounded-xl border border-brand-border bg-brand-bg/80 p-2 text-brand-text/60 backdrop-blur-sm transition-all hover:border-brand-accent hover:bg-brand-accent hover:text-brand-bg active:scale-95"
+    title="Re-render component"
+  >
+    <RotateCcw size={14} />
+  </button>
+
+  <div
+    key={previewKey}
+    className="absolute inset-0 overflow-y-auto overflow-x-auto custom-scrollbar"
+  >
+    <div className="relative flex min-h-full w-full min-w-[320px] flex-col items-center px-4 py-20">
+      <SelectedComponent {...componentProps} />
+    </div>
+  </div>
+</div>
+
+            {/* CONTROLS */}
             {componentData.controls && componentData.controls.length > 0 && (
               <section className="mb-10 w-full">
-                <h2 className="text-lg font-bold mb-4 tracking-tight">Customize</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-5 bg-brand-surface/15 border border-brand-border rounded-xl">
-                  {componentData.controls.map((c) => (
-                    <div key={c.name} className="flex flex-col gap-1.5 min-w-0">
-                      <label className="text-[10px] font-medium uppercase text-brand-text/30 tracking-wider truncate">{c.label}</label>
-                      <input className="w-full bg-brand-bg/50 border border-brand-border rounded-lg px-3 py-2.5 text-sm outline-none focus:border-brand-accent/30 transition-colors" value={componentProps[c.name] || ""} onChange={(e) => setComponentProps({ ...componentProps, [c.name]: e.target.value })} />
+                <div className="mb-4 flex items-center gap-2">
+                  <SlidersHorizontal size={17} className="text-brand-accent" />
+                  <h2 className="text-lg font-semibold tracking-tight">
+                    Customize
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 rounded-2xl border border-brand-border bg-brand-surface/15 p-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {componentData.controls.map((control) => (
+                    <div key={control.name} className="flex min-w-0 flex-col gap-1.5">
+                      <label className="truncate text-[10px] font-medium uppercase tracking-wider text-brand-text/35">
+                        {control.label}
+                      </label>
+
+                      <input
+                        className="w-full rounded-xl border border-brand-border bg-brand-bg/50 px-3 py-2.5 text-sm text-brand-text outline-none transition-colors placeholder:text-brand-text/25 focus:border-brand-accent/50"
+                        value={componentProps[control.name] || ""}
+                        onChange={(e) =>
+                          setComponentProps({
+                            ...componentProps,
+                            [control.name]: e.target.value,
+                          })
+                        }
+                      />
                     </div>
                   ))}
                 </div>
               </section>
             )}
 
-            {/* Props Table */}
+            {/* PROPS TABLE */}
             <section className="mb-10 w-full overflow-hidden">
-              <h2 className="text-lg font-bold mb-4 tracking-tight">Props</h2>
-              <div className="border border-brand-border rounded-xl bg-brand-surface/10 overflow-hidden w-full">
-                <div className="overflow-x-auto custom-scrollbar w-full">
-                  <table className="w-full text-left text-sm min-w-[600px]">
-                    <thead className="bg-brand-surface/20 border-b border-brand-border text-brand-text/40 text-[10px] font-semibold uppercase tracking-wider">
+              <div className="mb-4 flex items-center gap-2">
+                <Package size={17} className="text-brand-accent" />
+                <h2 className="text-lg font-semibold tracking-tight">
+                  Props
+                </h2>
+              </div>
+
+              <div className="w-full overflow-hidden rounded-2xl border border-brand-border bg-brand-surface/10">
+                <div className="w-full overflow-x-auto custom-scrollbar">
+                  <table className="w-full min-w-[680px] text-left text-sm">
+                    <thead className="border-b border-brand-border bg-brand-surface/20 text-[10px] font-semibold uppercase tracking-wider text-brand-text/45">
                       <tr>
                         <th className="px-5 py-3.5">Prop</th>
                         <th className="px-5 py-3.5">Type</th>
@@ -138,42 +254,69 @@ export default function ComponentPage() {
                         <th className="px-5 py-3.5">Description</th>
                       </tr>
                     </thead>
+
                     <tbody className="divide-y divide-brand-border/50">
-                      {propsTable.length > 0 ? propsTable.map((p) => (
-                        <tr key={p.name} className="hover:bg-brand-accent/3 transition-colors">
-                          <td className="px-5 py-3 text-brand-accent font-mono text-xs font-medium">{p.name}</td>
-                          <td className="px-5 py-3 text-brand-text/50 font-mono text-[10px] uppercase">{p.type}</td>
-                          <td className="px-5 py-3 font-mono text-[10px]">
-                            <code className="bg-brand-bg/40 px-1.5 py-0.5 rounded text-brand-text/50 whitespace-nowrap">{p.default === "--" ? p.default : `"${p.default}"`}</code>
+                      {propsTable.length > 0 ? (
+                        propsTable.map((prop) => (
+                          <tr
+                            key={prop.name}
+                            className="transition-colors hover:bg-brand-accent/5"
+                          >
+                            <td className="px-5 py-3 font-mono text-xs font-medium text-brand-accent">
+                              {prop.name}
+                            </td>
+
+                            <td className="px-5 py-3 font-mono text-[10px] uppercase text-brand-text/50">
+                              {prop.type}
+                            </td>
+
+                            <td className="px-5 py-3 font-mono text-[10px]">
+                              <code className="whitespace-nowrap rounded bg-brand-bg/40 px-1.5 py-0.5 text-brand-text/50">
+                                {prop.default === "--"
+                                  ? prop.default
+                                  : `"${prop.default}"`}
+                              </code>
+                            </td>
+
+                            <td className="px-5 py-3 text-[11px] leading-relaxed text-brand-text/40">
+                              {prop.desc}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan="4"
+                            className="px-5 py-10 text-center font-mono text-xs text-brand-text/20"
+                          >
+                            No props
                           </td>
-                          <td className="px-5 py-3 text-[11px] text-brand-text/35 leading-relaxed">{p.desc}</td>
                         </tr>
-                      )) : (
-                        <tr><td colSpan="4" className="px-5 py-10 text-center text-brand-text/20 text-xs font-mono">No props</td></tr>
                       )}
                     </tbody>
                   </table>
                 </div>
               </div>
             </section>
-            
-            {/* Dependencies */}
+
+            {/* DEPENDENCIES */}
             <section className="mb-10 w-full">
-              <h2 className="text-lg font-bold mb-4 tracking-tight">
+              <h2 className="mb-4 text-lg font-semibold tracking-tight">
                 Dependencies
               </h2>
+
               <div className="flex flex-wrap gap-2">
                 {dependencies.length > 0 ? (
                   dependencies.map((dep) => (
                     <div
                       key={dep}
-                      className="px-3 py-2 rounded-lg border border-brand-border bg-brand-surface/15 text-xs font-mono text-brand-accent break-all"
+                      className="break-all rounded-xl border border-brand-border bg-brand-surface/15 px-3 py-2 font-mono text-xs text-brand-accent"
                     >
                       {dep}
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-brand-text/30">
+                  <p className="text-xs text-brand-text/35">
                     No external dependencies.
                   </p>
                 )}
@@ -181,66 +324,120 @@ export default function ComponentPage() {
             </section>
           </motion.div>
         ) : (
-          <motion.div key="c" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }} className="w-full">
-            
-            {/* Install */}
+          <motion.div
+            key="code"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3 }}
+            className="w-full"
+          >
+            {/* INSTALLATION */}
             <section className="mb-10 w-full">
-              <h2 className="text-lg font-bold mb-4 tracking-tight">Installation</h2>
-              <div className="flex gap-0.5 p-0.5 bg-brand-surface/20 border border-brand-border rounded-lg w-fit mb-4">
-                {["cli", "manual"].map((m) => (
-                  <button key={m} onClick={() => setInstallMethod(m)} className={`px-4 py-1.5 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${installMethod === m ? "bg-brand-surface text-brand-accent" : "text-brand-text/35 hover:text-brand-text"}`}>{m}</button>
+              <h2 className="mb-4 text-lg font-semibold tracking-tight">
+                Installation
+              </h2>
+
+              <div className="mb-4 flex w-fit gap-0.5 rounded-xl border border-brand-border bg-brand-surface/20 p-1">
+                {["cli", "manual"].map((method) => (
+                  <button
+                    key={method}
+                    onClick={() => setInstallMethod(method)}
+                    className={`rounded-lg px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all ${
+                      installMethod === method
+                        ? "bg-brand-accent text-brand-bg"
+                        : "text-brand-text/35 hover:text-brand-text"
+                    }`}
+                  >
+                    {method}
+                  </button>
                 ))}
               </div>
+
               {installMethod === "cli" ? (
-                <div className="bg-brand-surface/15 border border-brand-border rounded-xl overflow-hidden w-full">
-                  <div className="flex overflow-x-auto bg-brand-surface/20 px-2 py-2 gap-0.5 border-b border-brand-border custom-scrollbar">
-                    {["npm", "pnpm", "yarn", "bun"].map((p) => (
-                      <button key={p} onClick={() => setPkgManager(p)} className={`px-3 py-1 rounded-md text-[10px] font-semibold transition-colors flex-shrink-0 ${pkgManager === p ? "bg-brand-surface text-brand-accent" : "text-brand-text/25 hover:text-brand-text/50"}`}>{p}</button>
+                <div className="w-full overflow-hidden rounded-2xl border border-brand-border bg-brand-surface/15">
+                  <div className="flex gap-0.5 overflow-x-auto border-b border-brand-border bg-brand-surface/20 px-2 py-2 custom-scrollbar">
+                    {["npm", "pnpm", "yarn", "bun"].map((manager) => (
+                      <button
+                        key={manager}
+                        onClick={() => setPkgManager(manager)}
+                        className={`shrink-0 rounded-lg px-3 py-1 text-[10px] font-semibold transition-colors ${
+                          pkgManager === manager
+                            ? "bg-brand-accent text-brand-bg"
+                            : "text-brand-text/30 hover:text-brand-text/60"
+                        }`}
+                      >
+                        {manager}
+                      </button>
                     ))}
                   </div>
-                  <div className="p-3 sm:p-4 font-mono text-[12px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
-                    <div className="flex items-center gap-3 w-full min-w-0">
-                      <Terminal size={14} className="text-brand-text/20 flex-shrink-0 hidden sm:block" />
-                      <div className="w-full overflow-x-auto custom-scrollbar pb-1 sm:pb-0">
-                        <code className="text-brand-text/70 text-[11px] whitespace-nowrap">
+
+                  <div className="flex flex-col items-start justify-between gap-3 p-4 font-mono text-[12px] sm:flex-row sm:items-center sm:gap-4">
+                    <div className="flex min-w-0 w-full items-center gap-3">
+                      <Terminal
+                        size={14}
+                        className="hidden shrink-0 text-brand-text/25 sm:block"
+                      />
+
+                      <div className="w-full overflow-x-auto pb-1 custom-scrollbar sm:pb-0">
+                        <code className="whitespace-nowrap text-[11px] text-brand-text/75">
                           {installCommands[pkgManager]}
                         </code>
                       </div>
                     </div>
-                    <button onClick={() => { navigator.clipboard.writeText(installCommands[pkgManager]); setCopiedInstall(true); setTimeout(() => setCopiedInstall(false), 2000); }} className="p-2 sm:p-1.5 w-full sm:w-auto rounded-md border border-brand-border text-brand-text/30 hover:text-brand-accent transition-colors flex-shrink-0 flex items-center justify-center gap-2">
-                      {copiedInstall ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
-                      <span className="text-[10px] sm:hidden">{copiedInstall ? "Copied" : "Copy"}</span>
+
+                    <button
+                      onClick={() => copyText(installCommands[pkgManager])}
+                      className="flex w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-brand-border p-2 text-brand-text/40 transition-colors hover:border-brand-accent hover:text-brand-accent sm:w-auto sm:p-1.5"
+                    >
+                      {copiedInstall ? (
+                        <Check size={12} className="text-green-400" />
+                      ) : (
+                        <Copy size={12} />
+                      )}
+
+                      <span className="text-[10px] sm:hidden">
+                        {copiedInstall ? "Copied" : "Copy"}
+                      </span>
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="p-5 bg-brand-surface/15 border border-brand-border rounded-xl text-xs text-brand-text/40 leading-relaxed">
-                  Copy source code below and save as <code className="text-brand-accent font-mono bg-brand-bg/30 px-1.5 py-0.5 rounded whitespace-nowrap">{id}.jsx</code>
+                <div className="rounded-2xl border border-brand-border bg-brand-surface/15 p-5 text-xs leading-relaxed text-brand-text/45">
+                  Copy source code below and save as{" "}
+                  <code className="whitespace-nowrap rounded bg-brand-bg/30 px-1.5 py-0.5 font-mono text-brand-accent">
+                    {id}.jsx
+                  </code>
                 </div>
               )}
             </section>
 
-            {/* Usage */}
+            {/* USAGE */}
             <section className="mb-10 w-full overflow-hidden">
-              <h2 className="text-lg font-bold mb-4 tracking-tight">Usage</h2>
+              <h2 className="mb-4 text-lg font-semibold tracking-tight">
+                Usage
+              </h2>
+
               <CodeBox code={componentData.usage} hideHeader expandable={false} />
             </section>
 
-            {/* Source */}
+            {/* SOURCE */}
             <section className="w-full overflow-hidden">
-              <h2 className="text-lg font-bold mb-4 tracking-tight">Source Code</h2>
+              <h2 className="mb-4 text-lg font-semibold tracking-tight">
+                Source Code
+              </h2>
+
               <CodeBox code={cleanedCode} />
             </section>
-            
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Footer */}
-      <footer className="mt-20 py-6 border-t border-brand-border/40 text-center w-full">
-        <p className="text-[9px] font-mono text-brand-text/15 uppercase tracking-[0.3em]">NtaKit © 2026 · Ananta Firdaus</p>
+      <footer className="mt-20 w-full border-t border-brand-border/40 py-6 text-center">
+        <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-brand-text/15">
+          NtaKit © 2026 · Ananta Firdaus
+        </p>
       </footer>
-      
     </div>
   );
 }

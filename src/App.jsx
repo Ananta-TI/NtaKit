@@ -12,25 +12,18 @@ function App() {
   return (
     <ThemeProvider>
       <Router>
-        <div className="min-h-screen bg-brand-bg text-brand-text">
-          
-          {/* HEADER GLOBAL */}
+        <div className="min-h-screen bg-brand-bg text-brand-text transition-colors duration-300">
           <Header />
 
           <Routes>
-
-            {/* PUBLIC / SIMPLE PAGES */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/contact" element={<Contact />} />
 
-            {/* ALL DOCS LAYOUT (SIDEBAR + PROMO) */}
             <Route element={<AppLayout />}>
-              <Route path="/components/:id" element={<ComponentPage />} />
               <Route path="/installation" element={<InstallationPage />} />
+              <Route path="/components/:id" element={<ComponentPage />} />
             </Route>
-
           </Routes>
-
         </div>
       </Router>
     </ThemeProvider>

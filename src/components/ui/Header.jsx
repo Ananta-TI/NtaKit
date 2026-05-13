@@ -22,10 +22,27 @@ import { componentRegistry } from "../../registry";
 
 /* ================= UTIL ================= */
 
+const firstComponentKey = Object.keys(componentRegistry)[0];
+
 const navLinks = [
-  { label: "Home", to: "/", match: (p) => p === "/", icon: Home },
-  { label: "Components", to: "/installation", match: (p) => p.startsWith("/installation"), icon: Layers },
-  { label: "Contact", to: "/contact", match: (p) => p === "/contact", icon: Mail },
+  {
+    label: "Home",
+    to: "/",
+    match: (p) => p === "/",
+    icon: Home,
+  },
+  {
+    label: "Components",
+    to: firstComponentKey ? `/components/${firstComponentKey}` : "/installation",
+    match: (p) => p.startsWith("/installation") || p.startsWith("/components"),
+    icon: Layers,
+  },
+  {
+    label: "Contact",
+    to: "/contact",
+    match: (p) => p === "/contact",
+    icon: Mail,
+  },
 ];
 
 export default function Header() {
@@ -33,14 +50,11 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Cek apakah user sedang di halaman Docs (Installation / Components)
   const isDocsArea =
     location.pathname.startsWith("/components") ||
     location.pathname.startsWith("/installation");
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  // State untuk Fitur Search
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -51,40 +65,49 @@ export default function Header() {
     setScrolled(v > 10);
   });
 
-  // Shortcut Ctrl+K / Cmd+K untuk buka search & tombol ESC untuk tutup
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        if (!isDocsArea) return;
+
         e.preventDefault();
         setIsSearchOpen(true);
       }
+
       if (e.key === "Escape") {
         setIsSearchOpen(false);
         setMobileMenuOpen(false);
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [isDocsArea]);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setIsSearchOpen(false);
+    setSearchQuery("");
+  }, [location.pathname]);
 
   const isActive = (link) => link.match(location.pathname);
   const isIslandMode = !isDocsArea && scrolled;
 
-  // Filter komponen berdasarkan ketikan user
-  const filteredComponents = Object.entries(componentRegistry).filter(
-    ([key, data]) => {
-      const query = searchQuery.toLowerCase();
-      return (
-        data.name.toLowerCase().includes(query) || key.toLowerCase().includes(query)
-      );
-    }
-  );
+  const filteredComponents = searchQuery.trim()
+    ? Object.entries(componentRegistry).filter(([key, data]) => {
+        const query = searchQuery.toLowerCase();
 
-  // Fungsi saat komponen di-klik dari hasil pencarian
+        return (
+          data.name.toLowerCase().includes(query) ||
+          key.toLowerCase().includes(query)
+        );
+      })
+    : Object.entries(componentRegistry).slice(0, 6);
+
   const handleSelectComponent = (key) => {
     navigate(`/components/${key}`);
     setIsSearchOpen(false);
-    setSearchQuery(""); // Reset input
+    setSearchQuery("");
   };
 
   return (
@@ -93,48 +116,54 @@ export default function Header() {
       <motion.header
         layout
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed z-40 backdrop-blur-xl flex items-center overflow-hidden transition-colors ${
+        className={`fixed z-40 flex items-center overflow-hidden backdrop-blur-xl transition-colors ${
           isIslandMode
-            ? "top-4 left-0 right-0 mx-auto w-[90%] max-w-4xl rounded-full border border-brand-border bg-brand-bg/90 shadow-2xl shadow-black/10 h-14"
-            : "top-0 left-0 right-0 w-full rounded-none border-b border-brand-border bg-brand-bg/80 h-14"
+            ? "top-4 left-0 right-0 mx-auto h-14 w-[90%] max-w-4xl rounded-full border border-brand-border bg-brand-bg/90 shadow-2xl shadow-black/10"
+            : "top-0 left-0 right-0 h-14 w-full rounded-none border-b border-brand-border bg-brand-bg/80"
         }`}
       >
         <div
-          className={`w-full mx-auto flex items-center justify-between h-full transition-all ${
+          className={`mx-auto flex h-full w-full items-center justify-between transition-all ${
             isIslandMode
               ? "px-5 sm:px-8"
               : "max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-10"
           }`}
         >
           {/* LEFT */}
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex min-w-0 items-center gap-3">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-brand-surface/20 border border-brand-border flex items-center justify-center">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-border bg-brand-surface/20">
                 <img
                   src={isDarkMode ? "/image/logo1.png" : "/image/logo2.png"}
-                  className="w-4 h-4"
+                  className="h-4 w-4"
                   alt="Logo"
                 />
               </div>
-              <span className="text-sm font-bold hidden sm:inline">
+
+              <span className="hidden text-sm font-bold sm:inline">
                 Nta<span className="text-brand-accent">Kit</span>
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-1 ml-4">
-              {navLinks.map((l) => (
-                <Link
-                  key={l.label}
-                  to={l.to}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                    isActive(l)
-                      ? "text-brand-accent bg-brand-accent/10"
-                      : "text-brand-text/40 hover:text-brand-text"
-                  }`}
-                >
-                  {l.label}
-                </Link>
-              ))}
+            <nav className="ml-4 hidden items-center gap-1 md:flex">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+
+                return (
+                  <Link
+                    key={link.label}
+                    to={link.to}
+                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+                      isActive(link)
+                        ? "bg-brand-accent/10 text-brand-accent"
+                        : "text-brand-text/40 hover:text-brand-text"
+                    }`}
+                  >
+                    <Icon size={14} />
+                    {link.label}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
 
@@ -144,20 +173,21 @@ export default function Header() {
               <>
                 <button
                   onClick={() => setIsSearchOpen(true)}
-                  className="hidden md:flex items-center justify-between gap-3 px-3 py-1.5 border border-brand-border rounded-lg text-sm text-brand-text/40 hover:text-brand-text hover:bg-brand-surface/30 transition-all bg-brand-surface/10 w-56"
+                  className="hidden w-56 items-center justify-between gap-3 rounded-lg border border-brand-border bg-brand-surface/10 px-3 py-1.5 text-sm text-brand-text/40 transition-all hover:bg-brand-surface/30 hover:text-brand-text md:flex"
                 >
                   <div className="flex items-center gap-2">
                     <Search size={14} />
                     <span>Search...</span>
                   </div>
-                  <kbd className="text-[10px] font-mono border border-brand-border/60 px-1.5 py-0.5 rounded text-brand-text/50">
+
+                  <kbd className="rounded border border-brand-border/60 px-1.5 py-0.5 font-mono text-[10px] text-brand-text/50">
                     ⌘K
                   </kbd>
                 </button>
 
                 <button
                   onClick={() => setIsSearchOpen(true)}
-                  className="md:hidden w-8 h-8 flex items-center justify-center border border-brand-border rounded-lg hover:bg-brand-surface/50 transition-colors"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-border transition-colors hover:bg-brand-surface/50 md:hidden"
                 >
                   <Search size={14} />
                 </button>
@@ -166,14 +196,16 @@ export default function Header() {
 
             <button
               onClick={toggleTheme}
-              className="w-8 h-8 flex items-center justify-center border border-brand-border rounded-lg hover:bg-brand-surface/50 transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-border transition-colors hover:bg-brand-surface/50"
+              aria-label="Toggle theme"
             >
               {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
             </button>
 
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden w-8 h-8 flex items-center justify-center border border-brand-border rounded-lg hover:bg-brand-surface/50 transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-border transition-colors hover:bg-brand-surface/50 md:hidden"
+              aria-label="Open menu"
             >
               <Menu size={14} />
             </button>
@@ -183,8 +215,8 @@ export default function Header() {
 
       {/* ================= SEARCH MODAL ================= */}
       <AnimatePresence>
-        {isSearchOpen && (
-          <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh] px-4 sm:px-6">
+        {isSearchOpen && isDocsArea && (
+          <div className="fixed inset-0 z-[60] flex items-start justify-center px-4 pt-[10vh] sm:px-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -198,21 +230,24 @@ export default function Header() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
               transition={{ duration: 0.15 }}
-              className="relative w-full max-w-lg bg-brand-bg border border-brand-border rounded-2xl shadow-2xl shadow-black/20 overflow-hidden flex flex-col"
+              className="relative flex w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-brand-border bg-brand-bg shadow-2xl shadow-black/20"
             >
-              <div className="flex items-center px-4 py-3 border-b border-brand-border bg-brand-surface/10">
-                <Search size={18} className="text-brand-accent mr-3" />
+              <div className="flex items-center border-b border-brand-border bg-brand-surface/10 px-4 py-3">
+                <Search size={18} className="mr-3 text-brand-accent" />
+
                 <input
                   type="text"
                   autoFocus
                   placeholder="Search components..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 bg-transparent border-none outline-none text-brand-text placeholder:text-brand-text/30 text-sm"
+                  className="flex-1 border-none bg-transparent text-sm text-brand-text outline-none placeholder:text-brand-text/30"
                 />
+
                 <button
                   onClick={() => setIsSearchOpen(false)}
-                  className="p-1 text-brand-text/30 hover:text-brand-text bg-brand-surface/20 rounded-md transition-colors"
+                  className="rounded-md bg-brand-surface/20 p-1 text-brand-text/30 transition-colors hover:text-brand-text"
+                  aria-label="Close search"
                 >
                   <X size={14} />
                 </button>
@@ -225,40 +260,54 @@ export default function Header() {
                       <button
                         key={key}
                         onClick={() => handleSelectComponent(key)}
-                        className="flex items-center justify-between w-full px-3 py-3 rounded-xl text-left hover:bg-brand-surface/30 transition-colors group"
+                        className="group flex w-full items-center justify-between rounded-xl px-3 py-3 text-left transition-colors hover:bg-brand-surface/30"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-brand-surface/50 border border-brand-border flex items-center justify-center text-brand-text/40 group-hover:text-brand-accent group-hover:border-brand-accent/30 transition-colors">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-border bg-brand-surface/50 text-brand-text/40 transition-colors group-hover:border-brand-accent/30 group-hover:text-brand-accent">
                             <Layers size={14} />
                           </div>
+
                           <div>
-                            <p className="text-sm font-semibold text-brand-text group-hover:text-brand-accent transition-colors">
+                            <p className="text-sm font-semibold text-brand-text transition-colors group-hover:text-brand-accent">
                               {data.name}
                             </p>
-                            <p className="text-[11px] text-brand-text/40 font-mono mt-0.5">
+                            <p className="mt-0.5 font-mono text-[11px] text-brand-text/40">
                               {key}
                             </p>
                           </div>
                         </div>
-                        <ChevronRight size={16} className="text-brand-text/20 group-hover:text-brand-accent/50 group-hover:translate-x-1 transition-all" />
+
+                        <ChevronRight
+                          size={16}
+                          className="text-brand-text/20 transition-all group-hover:translate-x-1 group-hover:text-brand-accent/50"
+                        />
                       </button>
                     ))}
                   </div>
                 ) : (
-                  <div className="py-12 text-center flex flex-col items-center justify-center">
-                    <div className="w-12 h-12 mb-3 rounded-full bg-brand-surface/20 flex items-center justify-center text-brand-text/20">
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-brand-surface/20 text-brand-text/20">
                       <Search size={20} />
                     </div>
-                    <p className="text-sm font-medium text-brand-text/60">No components found.</p>
-                    <p className="text-xs text-brand-text/30 mt-1">We couldn't find anything matching "{searchQuery}"</p>
+
+                    <p className="text-sm font-medium text-brand-text/60">
+                      No components found.
+                    </p>
+                    <p className="mt-1 text-xs text-brand-text/30">
+                      We couldn't find anything matching "{searchQuery}"
+                    </p>
                   </div>
                 )}
               </div>
-              
-              <div className="px-4 py-2 border-t border-brand-border bg-brand-surface/5 flex items-center justify-between">
+
+              <div className="flex items-center justify-between border-t border-brand-border bg-brand-surface/5 px-4 py-2">
                 <span className="text-[10px] text-brand-text/40">
-                  <kbd className="border border-brand-border/60 px-1 py-0.5 rounded mr-1">ESC</kbd> to close
+                  <kbd className="mr-1 rounded border border-brand-border/60 px-1 py-0.5">
+                    ESC
+                  </kbd>
+                  to close
                 </span>
+
                 <span className="text-[10px] text-brand-text/40">
                   {filteredComponents.length} results
                 </span>
@@ -282,42 +331,42 @@ export default function Header() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 w-[85%] max-w-xs bg-brand-bg border-l border-brand-border z-50 flex flex-col shadow-2xl"
+              className="fixed bottom-0 right-0 top-0 z-50 flex w-[85%] max-w-xs flex-col border-l border-brand-border bg-brand-bg shadow-2xl"
             >
-              <div className="p-4 border-b border-brand-border flex justify-between items-center">
-                <span className="text-[10px] font-bold tracking-wider uppercase text-brand-text/40">
+              <div className="flex items-center justify-between border-b border-brand-border p-4">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-text/40">
                   Menu
                 </span>
+
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 bg-brand-surface/30 rounded-lg hover:text-brand-accent transition-colors"
+                  className="rounded-lg bg-brand-surface/30 p-2 transition-colors hover:text-brand-accent"
+                  aria-label="Close menu"
                 >
                   <X size={14} />
                 </button>
               </div>
 
-              {/* NAV MOBILE - Dengan Aktif State */}
-              <div className="p-4 flex flex-col gap-1">
-                {navLinks.map((l) => (
+              <div className="flex flex-col gap-1 p-4">
+                {navLinks.map((link) => (
                   <Link
-                    key={l.label}
-                    to={l.to}
+                    key={link.label}
+                    to={link.to}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                      isActive(l)
-                        ? "text-brand-accent bg-brand-accent/10"
-                        : "text-brand-text/70 hover:text-brand-accent hover:bg-brand-surface/30"
+                    className={`rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
+                      isActive(link)
+                        ? "bg-brand-accent/10 text-brand-accent"
+                        : "text-brand-text/70 hover:bg-brand-surface/30 hover:text-brand-accent"
                     }`}
                   >
-                    {l.label}
+                    {link.label}
                   </Link>
                 ))}
               </div>
 
-              {/* COMPONENT LIST MOBILE - Dengan Aktif State */}
               {isDocsArea && (
-                <div className="p-4 border-t border-brand-border overflow-y-auto custom-scrollbar flex-1">
-                  <p className="text-[10px] font-bold tracking-wider uppercase text-brand-accent mb-3">
+                <div className="flex-1 overflow-y-auto border-t border-brand-border p-4 custom-scrollbar">
+                  <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-brand-accent">
                     Components
                   </p>
 
@@ -327,10 +376,10 @@ export default function Header() {
                         key={key}
                         to={`/components/${key}`}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`block px-3 py-2 text-sm rounded-lg transition-all ${
+                        className={`block rounded-lg px-3 py-2 text-sm transition-all ${
                           location.pathname === `/components/${key}`
-                            ? "text-brand-accent bg-brand-surface/30 font-semibold"
-                            : "text-brand-text/60 hover:text-brand-text hover:bg-brand-surface/30"
+                            ? "bg-brand-surface/30 font-semibold text-brand-accent"
+                            : "text-brand-text/60 hover:bg-brand-surface/30 hover:text-brand-text"
                         }`}
                       >
                         {data.name}

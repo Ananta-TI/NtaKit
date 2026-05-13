@@ -16,6 +16,28 @@
   --color-brand-accent: #A27B5C;
   --color-brand-text: #DCD7C9;
   --color-brand-border: #4B5C5D;
+
+    --color-rb-bg: #120F17;
+  --color-rb-card: #1B1722;
+  --color-rb-elevated: #1B1722;
+  --color-rb-hover: #373044;
+  --color-rb-border: #2F293A;
+  --color-rb-primary: #A855F7;
+  --color-rb-primary-deep: #5227FF;
+  --color-rb-accent: #B497CF;
+  --color-rb-text: #FFFFFF;
+  --color-rb-secondary: #F5F5F5;
+  --color-rb-muted: #AAAAAA;
+  --color-rb-dimmed: #A1A1AA;
+
+  --font-rb-sans: "Geist", Inter, system-ui, sans-serif;
+  --font-rb-mono: "Geist Mono", ui-monospace, monospace;
+
+  --radius-rb-sm: 10px;
+  --radius-rb-md: 12px;
+  --radius-rb-lg: 16px;
+  --radius-rb-xl: 24px;
+  --radius-rb-full: 50px;
 }
 
 .light {

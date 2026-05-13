@@ -4,23 +4,22 @@ import { Outlet } from "react-router-dom";
 
 export default function AppLayout() {
   return (
-    <div className="min-h-screen bg-brand-bg text-brand-text grid grid-cols-1 md:grid-cols-[14rem_1fr] xl:grid-cols-[14rem_1fr_18rem]">
-      
-      {/* LEFT SIDEBAR - Dibuat sticky agar diam saat di-scroll */}
-      <aside className="hidden md:block sticky top-0 h-screen overflow-y-auto">
-        <Sidebar />
-      </aside>
+    <div className="min-h-screen bg-brand-bg text-brand-text pt-14">
+      <div className="grid min-h-[calc(100vh-56px)] grid-cols-1 md:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[14rem_minmax(0,1fr)_18rem]">
+        <aside className="hidden md:block sticky top-14 h-[calc(100vh-56px)] overflow-hidden">
+          <Sidebar />
+        </aside>
 
-      {/* MAIN CONTENT - Mengisi ruang 1fr secara penuh */}
-      <main className="min-w-0 px-4 sm:px-6 md:px-8 lg:px-12 pt-24 pb-12 w-full">
-        <Outlet />
-      </main>
+        <main className="min-w-0 px-4 py-8 sm:px-6 md:px-8 lg:px-10">
+          <div className="mx-auto w-full max-w-7xl">
+            <Outlet />
+          </div>
+        </main>
 
-      {/* RIGHT SIDEBAR - Dibuat sticky */}
-      <aside className="hidden xl:block sticky top-0 h-screen overflow-y-auto">
-        <PromoSidebar />
-      </aside>
-
+        <aside className="hidden xl:block sticky top-14 h-[calc(100vh-56px)] overflow-y-auto border-l border-brand-border bg-brand-bg custom-scrollbar">
+          <PromoSidebar />
+        </aside>
+      </div>
     </div>
   );
 }
