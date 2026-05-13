@@ -7,6 +7,7 @@ import LandingPage from "./pages/LandingPage";
 import ComponentPage from "./pages/ComponentPage";
 import InstallationPage from "./components/ui/Installation";
 import Contact from "./components/ui/Contact";
+import TestPage from "./playground/Test";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route element={<AppLayout />}>
               <Route path="/installation" element={<InstallationPage />} />
               <Route path="/components/:id" element={<ComponentPage />} />
+              <Route path="/test" element={<TestPage />} />
             </Route>
           </Routes>
         </div>

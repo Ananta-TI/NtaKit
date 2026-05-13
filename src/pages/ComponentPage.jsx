@@ -177,7 +177,7 @@ export default function ComponentPage() {
             className="w-full"
           >
             {/* PREVIEW BOX */}
-            <div className="relative mb-10 min-h-[450px] w-full overflow-hidden rounded-3xl border border-brand-border bg-brand-surface/20 sm:min-h-[500px] lg:min-h-[600px]">
+<div className="relative mb-10 h-[560px] w-full overflow-hidden rounded-3xl border border-brand-border bg-brand-surface/20 sm:h-[620px] lg:h-[680px]">
   <div className="absolute left-4 top-4 z-20 flex items-center gap-2 rounded-full border border-brand-border bg-brand-bg/80 px-3 py-2 text-[11px] text-brand-text/50 backdrop-blur-sm">
     <Eye size={13} />
     Live Preview
@@ -191,12 +191,11 @@ export default function ComponentPage() {
     <RotateCcw size={14} />
   </button>
 
-  <div
-    key={previewKey}
-    className="absolute inset-0 overflow-y-auto overflow-x-auto custom-scrollbar"
-  >
-    <div className="relative flex min-h-full w-full min-w-[320px] flex-col items-center px-4 py-20">
-      <SelectedComponent {...componentProps} />
+  <div key={previewKey} className="absolute inset-0 overflow-hidden">
+    <div className="flex h-full w-full min-w-0 items-center justify-center px-3 pb-6 pt-16 sm:px-5 sm:pb-8 sm:pt-18">
+      <div className="flex h-full w-full max-w-full items-center justify-center overflow-hidden">
+        <SelectedComponent {...componentProps} preview />
+      </div>
     </div>
   </div>
 </div>

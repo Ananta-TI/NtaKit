@@ -72,7 +72,7 @@
       "name": "title",
       "type": "string",
       "default": "Get in Touch",
-      "desc": "Judul yang ditampilkan di atas form."
+      "desc": "Judul yang ditampilkan di atas form. Isi string kosong untuk menyembunyikan judul."
     },
     {
       "name": "successMessage",
@@ -81,22 +81,40 @@
       "desc": "Pesan yang ditampilkan saat form berhasil dikirim."
     },
     {
+      "name": "errorMessage",
+      "type": "string",
+      "default": "Something went wrong. Please try again.",
+      "desc": "Pesan yang ditampilkan saat proses submit gagal atau onSubmit menghasilkan error."
+    },
+    {
       "name": "buttonText",
       "type": "string",
       "default": "Send Message",
-      "desc": "Teks yang ditampilkan pada tombol submit dalam keadaan idle."
+      "desc": "Teks yang ditampilkan pada tombol submit saat form dalam keadaan idle."
     },
     {
       "name": "loadingText",
       "type": "string",
       "default": "Sending...",
-      "desc": "Teks yang ditampilkan pada tombol saat form sedang dalam proses pengiriman."
+      "desc": "Teks yang ditampilkan pada tombol submit saat form sedang mengirim data."
     },
     {
       "name": "successDuration",
       "type": "number",
       "default": "5000",
       "desc": "Durasi pesan sukses ditampilkan sebelum hilang otomatis dalam satuan milidetik."
+    },
+    {
+      "name": "compact",
+      "type": "boolean",
+      "default": "false",
+      "desc": "Mengaktifkan layout lebih kecil untuk preview, modal, card, atau container sempit."
+    },
+    {
+      "name": "className",
+      "type": "string",
+      "default": "",
+      "desc": "Class tambahan untuk mengubah atau menambah styling wrapper utama."
     }
   ],
   "github-isometric": [

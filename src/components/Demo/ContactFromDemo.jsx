@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext } from "react";
+import { useRef, useState, useContext } from "react";
 import { Mail, Loader } from "lucide-react";
 import gsap from "gsap";
 import { ThemeContext } from "../../context/ThemeContext.jsx";
@@ -7,7 +7,7 @@ function cn(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-function ContactFormLine({ inputId, hasError, isDarkMode }) {
+function ContactFormLine({ inputId, hasError }) {
   return (
     <svg
       viewBox="0 0 300 100"
@@ -15,13 +15,11 @@ function ContactFormLine({ inputId, hasError, isDarkMode }) {
       strokeLinejoin="round"
       className={cn(
         `input-line-${inputId}`,
-        "pointer-events-none absolute bottom-0 right-0 h-[60px] md:h-[80px] w-[300%] fill-none stroke-[1.75] transition-colors duration-300 will-change-transform",
+        "pointer-events-none absolute bottom-0 right-0 h-[48px] w-[300%] fill-none stroke-[1.75] transition-colors duration-300 will-change-transform",
+        "sm:h-[56px]",
         hasError
           ? "stroke-red-500/80"
-          : isDarkMode
-          // PERBAIKAN: Garis bawah dibikin lebih kelihatan (dari zinc-600/40 jadi zinc-500/60)
-          ? "stroke-zinc-500/60 peer-focus:stroke-zinc-200"
-          : "stroke-zinc-300 peer-focus:stroke-zinc-800"
+          : "stroke-brand-border peer-focus:stroke-brand-text"
       )}
       preserveAspectRatio="none"
     >
@@ -34,8 +32,12 @@ export default function ContactForm({
   onSubmit,
   title = "Get in Touch",
   successMessage = "Message sent successfully.",
+  preview = false,
 }) {
-  const { isDarkMode } = useContext(ThemeContext);
+  const themeCtx = useContext(ThemeContext);
+  const isDarkMode = themeCtx?.isDarkMode ?? true;
+
+  const rootRef = useRef(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -49,8 +51,13 @@ export default function ContactForm({
   const [errors, setErrors] = useState({});
 
   const handleFocus = (id) => {
+    if (!rootRef.current) return;
+
+    const line = rootRef.current.querySelector(`.input-line-${id}`);
+    if (!line) return;
+
     gsap.fromTo(
-      `.input-line-${id}`,
+      line,
       { xPercent: 0 },
       { xPercent: 65, duration: 1, ease: "power1.inOut" }
     );
@@ -58,17 +65,32 @@ export default function ContactForm({
 
   const validate = () => {
     const err = {};
+
     if (!form.name.trim()) err.name = "Required";
+
     if (!form.email.trim()) {
       err.email = "Required";
     } else if (!/\S+@\S+\.\S+/.test(form.email)) {
       err.email = "Invalid email";
     }
+
     if (!form.subject.trim()) err.subject = "Required";
     if (!form.message.trim()) err.message = "Required";
 
     setErrors(err);
     return Object.keys(err).length === 0;
+  };
+
+  const handleChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+
+    if (errors[field]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -79,9 +101,7 @@ export default function ContactForm({
     setSent(false);
 
     try {
-      if (onSubmit) {
-        await onSubmit(form);
-      }
+      if (onSubmit) await onSubmit(form);
 
       setSent(true);
       setForm({ name: "", email: "", subject: "", message: "" });
@@ -94,105 +114,123 @@ export default function ContactForm({
     }
   };
 
+  const rootClass = preview
+    ? "flex h-full w-full items-center justify-center bg-transparent px-2 py-2"
+    : "flex min-h-[460px] w-full items-center justify-center bg-transparent px-4 py-8 sm:px-6 sm:py-10";
+
+  const cardClass = preview
+    ? "w-full max-w-xl rounded-2xl border p-4 shadow-xl transition-colors duration-300 sm:p-5"
+    : "w-full max-w-2xl rounded-3xl border p-5 shadow-xl transition-colors duration-300 sm:p-8 md:p-10";
+
+  const titleClass = preview
+    ? "text-[clamp(1.6rem,4vw,2.4rem)] font-semibold leading-[0.98] tracking-[-0.045em] text-brand-text"
+    : "text-[clamp(2rem,5vw,3.5rem)] font-semibold leading-[0.95] tracking-[-0.055em] text-brand-text";
+
+  const formGapClass = preview
+    ? "flex flex-col gap-3 font-mono font-medium"
+    : "flex flex-col gap-5 font-mono font-medium sm:gap-6";
+
+  const inputClass = preview
+    ? "peer w-full bg-transparent py-1.5 text-sm text-brand-text outline-none transition-colors placeholder:text-brand-text/40"
+    : "peer w-full bg-transparent py-2 text-sm text-brand-text outline-none transition-colors placeholder:text-brand-text/40 sm:text-base";
+
+  const textareaClass = preview
+    ? "peer min-h-[76px] w-full resize-none bg-transparent py-1.5 text-sm text-brand-text outline-none transition-colors placeholder:text-brand-text/40"
+    : "peer min-h-[110px] w-full resize-none bg-transparent py-2 text-sm text-brand-text outline-none transition-colors placeholder:text-brand-text/40 sm:min-h-[130px] sm:text-base";
+
   return (
-    <div
-      className={cn(
-        "w-full px-6 py-8 sm:p-10 md:p-12 rounded-2xl md:rounded-3xl transition-colors duration-300",
-        isDarkMode 
-          ? "bg-transparent text-white border border-zinc-700/60 shadow-xl" 
-          : "bg-transparent text-zinc-900 border border-zinc-200/60 shadow-xl"
-      )}
-    >
-      <div className="w-full max-w-xl mx-auto">
-        {title && (
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 md:mb-10 text-center tracking-tight">
-            {title}
-          </h1>
+    <div className={rootClass}>
+      <div
+        ref={rootRef}
+        className={cn(
+          cardClass,
+          "border-brand-border bg-brand-surface/30 text-brand-text"
         )}
+      >
+        <div className="mx-auto w-full max-w-xl">
+          {title && (
+            <div className={preview ? "mb-4 text-center" : "mb-8 text-center"}>
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-accent sm:text-[11px]">
+                Contact Form
+              </p>
 
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col gap-6 md:gap-7 font-mono font-medium"
-        >
-          {["name", "email", "subject", "message"].map((field, index) => (
-            <div key={field} className="relative overflow-hidden">
-              {field === "message" ? (
-                <textarea
-                  name={field}
-                  value={form[field]}
-                  onChange={(e) =>
-                    setForm({ ...form, [field]: e.target.value })
-                  }
-                  onFocus={() => handleFocus(index + 1)}
-                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                  className={cn(
-                    "peer w-full min-h-[100px] md:min-h-[120px] bg-transparent outline-none py-2 md:py-3 resize-none text-sm md:text-base transition-colors",
-                    // PERBAIKAN: Mengganti text-zinc-600 menjadi text-zinc-400 agar lebih terang
-                    isDarkMode ? "text-white placeholder:text-zinc-400" : "text-zinc-900 placeholder:text-zinc-500"
-                  )}
-                />
-              ) : (
-                <input
-                  name={field}
-                  type={field === "email" ? "email" : "text"}
-                  value={form[field]}
-                  onChange={(e) =>
-                    setForm({ ...form, [field]: e.target.value })
-                  }
-                  onFocus={() => handleFocus(index + 1)}
-                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                  className={cn(
-                    "peer w-full bg-transparent outline-none py-2 md:py-3 text-sm md:text-base transition-colors",
-                    // PERBAIKAN: Mengganti text-zinc-600 menjadi text-zinc-400 agar lebih terang
-                    isDarkMode ? "text-white placeholder:text-zinc-400" : "text-zinc-900 placeholder:text-zinc-500"
-                  )}
-                />
-              )}
-
-              <ContactFormLine
-                inputId={index + 1}
-                hasError={!!errors[field]}
-                isDarkMode={isDarkMode}
-              />
-
-              {errors[field] && (
-                <span className="text-red-500 text-[10px] md:text-xs absolute right-0 top-3 uppercase tracking-wider font-bold">
-                  {errors[field]}
-                </span>
-              )}
-            </div>
-          ))}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={cn(
-              "flex items-center justify-center gap-2 border py-3 md:py-4 rounded-xl transition-all mt-3 text-sm md:text-base font-sans font-bold tracking-wide",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              isDarkMode
-                ? "border-zinc-700/50 bg-zinc-800/50 hover:bg-white hover:text-black"
-                : "border-zinc-300 bg-zinc-50 hover:bg-zinc-900 hover:text-white"
-            )}
-          >
-            {loading ? (
-              <>
-                <Loader className="animate-spin" size={18} />
-                Sending...
-              </>
-            ) : (
-              <>
-                <Mail size={18} />
-                Send Message
-              </>
-            )}
-          </button>
-
-          {sent && (
-            <div className="text-green-500 text-xs md:text-sm mt-2 text-center p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-              {successMessage}
+              <h1 className={titleClass}>{title}</h1>
             </div>
           )}
-        </form>
+
+          <form onSubmit={handleSubmit} className={formGapClass}>
+            {["name", "email", "subject", "message"].map((field, index) => {
+              const label = field.charAt(0).toUpperCase() + field.slice(1);
+              const hasError = Boolean(errors[field]);
+
+              return (
+                <div key={field} className="relative overflow-hidden pb-2">
+                  {field === "message" ? (
+                    <textarea
+                      name={field}
+                      value={form[field]}
+                      onChange={(e) => handleChange(field, e.target.value)}
+                      onFocus={() => handleFocus(index + 1)}
+                      placeholder={label}
+                      className={textareaClass}
+                    />
+                  ) : (
+                    <input
+                      name={field}
+                      type={field === "email" ? "email" : "text"}
+                      value={form[field]}
+                      onChange={(e) => handleChange(field, e.target.value)}
+                      onFocus={() => handleFocus(index + 1)}
+                      placeholder={label}
+                      className={inputClass}
+                    />
+                  )}
+
+                  <ContactFormLine
+                    inputId={index + 1}
+                    hasError={hasError}
+                    isDarkMode={isDarkMode}
+                  />
+
+                  {hasError && (
+                    <span className="absolute right-0 top-1.5 text-[10px] font-bold uppercase tracking-wider text-red-500">
+                      {errors[field]}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={cn(
+                "mt-1 flex items-center justify-center gap-2 rounded-xl border text-sm font-bold tracking-wide transition-all",
+                preview ? "py-2.5" : "py-3 sm:py-4 sm:text-base",
+                "border-brand-border bg-brand-bg text-brand-text hover:border-brand-accent hover:bg-brand-accent hover:text-brand-bg",
+                "disabled:cursor-not-allowed disabled:opacity-50"
+              )}
+            >
+              {loading ? (
+                <>
+                  <Loader className="animate-spin" size={18} />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Mail size={18} />
+                  Send Message
+                </>
+              )}
+            </button>
+
+            {sent && (
+              <div className="mt-2 rounded-xl border border-green-500/20 bg-green-500/10 p-3 text-center text-xs text-green-500">
+                {successMessage}
+              </div>
+            )}
+          </form>
+        </div>
       </div>
     </div>
   );
