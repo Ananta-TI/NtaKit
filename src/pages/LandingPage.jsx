@@ -74,32 +74,107 @@ const softShadow =
   "0 84px 24px rgba(0,0,0,0), 0 54px 22px rgba(0,0,0,0.01), 0 30px 18px rgba(0,0,0,0.04), 0 13px 13px rgba(0,0,0,0.08), 0 3px 7px rgba(0,0,0,0.09)";
 
 /* =========================
-   PREMIUM BUTTON
+   REVEAL BUTTON
+   Mouse-follow circle reveal per button
 ========================= */
-function PremiumButton({
+function RevealButton({
   children,
   href,
   to,
-  primary = false,
-  isDarkMode,
+  variant = "secondary",
+  size = "md",
+  className = "",
 }) {
   const buttonRef = useRef(null);
   const circleRef = useRef(null);
+  const textRef = useRef(null);
 
-  const handleMouseEnter = (e) => {
-    if (!buttonRef.current || !circleRef.current) return;
+  const variants = {
+    primary: {
+      wrapper:
+        "border-brand-accent bg-transparent text-brand-accent hover:border-brand-accent",
+      circle: "bg-brand-accent",
+      initialText: "var(--color-brand-accent)",
+      hoverText: "var(--color-brand-bg)",
+      classText: "text-brand-accent",
+    },
+    secondary: {
+      wrapper:
+        "border-brand-text/35 bg-transparent text-brand-text hover:border-brand-text/65",
+      circle: "bg-brand-text",
+      initialText: "var(--color-brand-text)",
+      hoverText: "var(--color-brand-bg)",
+      classText: "text-brand-text",
+    },
+    ghost: {
+      wrapper:
+        "border-brand-border bg-brand-surface/20 text-brand-text hover:border-brand-accent",
+      circle: "bg-brand-accent",
+      initialText: "var(--color-brand-text)",
+      hoverText: "var(--color-brand-bg)",
+      classText: "text-brand-text",
+    },
+  };
 
-    const bounds = buttonRef.current.getBoundingClientRect();
-    const x = e.clientX - bounds.left;
-    const y = e.clientY - bounds.top;
+  const sizes = {
+    sm: "min-h-[42px] px-5 py-2.5 text-[11px]",
+    md: "min-h-[52px] px-7 py-3.5 text-[12px] sm:px-8 sm:py-4",
+    lg: "min-h-[60px] px-9 py-4 text-[13px] sm:px-10 sm:py-5",
+  };
+
+  const selectedVariant = variants[variant] || variants.secondary;
+  const selectedSize = sizes[size] || sizes.md;
+
+  const getPointerPosition = (event) => {
+    if (!buttonRef.current) return { x: 0, y: 0 };
+
+    const rect = buttonRef.current.getBoundingClientRect();
+
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+  };
+
+  const moveCircle = (event, immediate = false) => {
+    if (!circleRef.current) return;
+
+    const { x, y } = getPointerPosition(event);
+
+    if (immediate) {
+      gsap.set(circleRef.current, {
+        left: x,
+        top: y,
+        xPercent: -50,
+        yPercent: -50,
+      });
+
+      return;
+    }
+
+    gsap.to(circleRef.current, {
+      left: x,
+      top: y,
+      duration: 0.16,
+      ease: "power3.out",
+    });
+  };
+
+  const handleMouseEnter = (event) => {
+    if (!circleRef.current || !textRef.current) return;
+
+    gsap.killTweensOf(circleRef.current);
+    gsap.killTweensOf(textRef.current);
+
+    moveCircle(event, true);
 
     gsap.set(circleRef.current, {
-      x,
-      y,
-      xPercent: -50,
-      yPercent: -50,
       scale: 0,
       opacity: 1,
+    });
+
+    gsap.set(textRef.current, {
+      color: selectedVariant.hoverText,
     });
 
     gsap.to(circleRef.current, {
@@ -109,79 +184,100 @@ function PremiumButton({
     });
   };
 
-  const handleMouseLeave = () => {
-    if (!circleRef.current) return;
+  const handleMouseMove = (event) => {
+    moveCircle(event);
+  };
+
+  const handleMouseLeave = (event) => {
+    if (!circleRef.current || !textRef.current) return;
+
+    gsap.killTweensOf(circleRef.current);
+    gsap.killTweensOf(textRef.current);
+
+    moveCircle(event, true);
+
+    gsap.set(textRef.current, {
+      color: selectedVariant.initialText,
+    });
 
     gsap.to(circleRef.current, {
       scale: 0,
-      opacity: 0,
+      opacity: 1,
       duration: 0.45,
-      ease: "power3.out",
+      ease: "power3.inOut",
+      onComplete: () => {
+        gsap.set(circleRef.current, {
+          opacity: 0,
+        });
+      },
     });
   };
 
-  const baseClass = `
-    group relative inline-flex min-h-[50px] items-center justify-center
-    overflow-hidden rounded-[4px] border px-5 py-3
-    text-[16px] font-medium leading-[25.6px] tracking-[-0.16px]
-    transition-all duration-300 active:translate-y-[1px]
-  `;
-
-  const primaryClass = `
-    border-brand-accent bg-brand-accent text-brand-bg
-    shadow-[0_16px_45px_rgba(0,0,0,0.16)]
-  `;
-
-  const secondaryClass = `
-    border-brand-border bg-brand-surface text-brand-text
-    hover:border-brand-accent
-  `;
-
-  const content = (
+  const buttonContent = (
     <MagneticEffect>
-      <div
+      <span
         ref={buttonRef}
         onMouseEnter={handleMouseEnter}
+        onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className={`${baseClass} ${primary ? primaryClass : secondaryClass}`}
+        className={`
+          group relative isolate inline-flex w-fit shrink-0 items-center justify-center
+          overflow-hidden rounded-full border
+          font-semibold uppercase leading-none tracking-[0.18em]
+          transition-[border-color,box-shadow,transform] duration-300
+          active:translate-y-[1px]
+          ${selectedSize}
+          ${selectedVariant.wrapper}
+          ${className}
+        `}
       >
         <span
           ref={circleRef}
           className={`
-            pointer-events-none absolute left-0 top-0 aspect-square w-[260%]
-            rounded-full
-            ${primary ? "bg-brand-text" : "bg-brand-accent"}
+            pointer-events-none absolute z-0 aspect-square w-[260%]
+            rounded-full opacity-0
+            ${selectedVariant.circle}
           `}
-          style={{ opacity: 0 }}
+          style={{
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%) scale(0)",
+          }}
         />
 
         <span
+          ref={textRef}
           className={`
-            relative z-10 flex items-center gap-2 transition-colors duration-300
-            ${
-              primary
-                ? "group-hover:text-brand-bg"
-                : isDarkMode
-                ? "group-hover:text-brand-bg"
-                : "group-hover:text-brand-bg"
-            }
+            relative z-10 flex items-center justify-center gap-2
+            whitespace-nowrap
+            ${selectedVariant.classText}
           `}
         >
           {children}
         </span>
-      </div>
+      </span>
     </MagneticEffect>
   );
 
-  if (to) return <Link to={to}>{content}</Link>;
+  if (to) {
+    return (
+      <Link to={to} className="inline-flex w-fit shrink-0">
+        {buttonContent}
+      </Link>
+    );
+  }
 
   return (
-    <a href={href} target="_blank" rel="noreferrer">
-      {content}
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="inline-flex w-fit shrink-0"
+    >
+      {buttonContent}
     </a>
   );
 }
-
 /* =========================
    CATEGORY CARD
 ========================= */
@@ -528,28 +624,29 @@ export default function LandingPage() {
           </motion.p>
 
           <motion.div
-            variants={item}
-            className="mt-10 flex flex-col gap-3 sm:flex-row"
-          >
-            <PremiumButton
-              to="/components/github-isometric"
-              primary
-              isDarkMode={isDarkMode}
-            >
-              Explore Components
-              <ArrowRight
-                size={17}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </PremiumButton>
+  variants={item}
+  className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap sm:items-center"
+>
+            
 
-            <PremiumButton
-              href="https://github.com/Ananta-TI"
-              isDarkMode={isDarkMode}
-            >
-              <GithubIcon size={16} />
-              Source Code
-            </PremiumButton>
+<RevealButton
+  to="/components/github-isometric"
+  variant="primary"
+  size="md"
+>
+  <ArrowRight size={16} />
+  Explore Components
+</RevealButton>
+
+
+<RevealButton
+  href="https://github.com/Ananta-TI"
+  variant="secondary"
+  size="md"
+>
+  <GithubIcon size={16} />
+  Source Code
+</RevealButton>
           </motion.div>
         </section>
 

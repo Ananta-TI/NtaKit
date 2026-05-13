@@ -8,12 +8,15 @@ import ComponentPage from "./pages/ComponentPage";
 import InstallationPage from "./components/ui/Installation";
 import Contact from "./components/ui/Contact";
 import TestPage from "./playground/Test";
+import ScrollToTop from "./components/ui/ScrollToTop";
+
 
 function App() {
   return (
     <ThemeProvider>
       <Router>
         <div className="min-h-screen bg-brand-bg text-brand-text transition-colors duration-300">
+          <ScrollToTop />
           <Header />
 
           <Routes>
