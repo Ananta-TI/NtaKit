@@ -311,7 +311,7 @@ export default function GithubIsometric({
 
     allDays.forEach((day) => {
       // ────────────────────────────────────────────────────────
-      // FIX: Gunakan tanggal sebenarnya untuk posisi grid
+      // FIX: Use actual date for grid position
       // ────────────────────────────────────────────────────────
       const dateObj = parseDate(day.date);
       const di_full = dateObj.getDay();

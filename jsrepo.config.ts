@@ -6,6 +6,16 @@ export default defineConfig({
     name: "NtaKit",
     items: [
       {
+        name: "animated-beam",
+        type: "registry:component",
+        files: [{ path: "src/components/registry/AnimatedBeam.jsx" }]
+      },
+      {
+        name: "background",
+        type: "registry:component",
+        files: [{ path: "src/components/registry/KineticGrid.jsx" }]
+      },
+      {
         name: "github-isometric",
         type: "registry:component",
         files: [{ path: "src/components/registry/GithubIsometric.jsx" }]
@@ -26,7 +36,7 @@ export default defineConfig({
         files: [{ path: "src/components/registry/ContactForm.jsx" }]
       }
     ],
-    // Ini bagian yang paling penting agar file .json per komponen terbuat!
+    // This is the most important part so that .json file per component is created!
     outputs: [repository()],
   },
   paths: {

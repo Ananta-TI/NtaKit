@@ -1,6 +1,6 @@
 /**
  * Performance Optimization Utilities
- * Untuk Three.js components dan general React optimizations
+ * For Three.js components and general React optimizations
  */
 
 // ============================================

@@ -88,9 +88,9 @@ export default function ComponentPage() {
     <div className="flex w-full flex-col">
       {/* ================= HEADER ================= */}
       <div className="mb-10 border-b border-brand-border pb-8">
-        <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.22em] text-brand-accent">
-          Components / Preview
-        </p>
+            <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.22em] text-brand-accent">
+              Components / {componentData.name}
+            </p>
 
         <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div>
@@ -217,16 +217,70 @@ export default function ComponentPage() {
                         {control.label}
                       </label>
 
-                      <input
-                        className="w-full rounded-xl border border-brand-border bg-brand-bg/50 px-3 py-2.5 text-sm text-brand-text outline-none transition-colors placeholder:text-brand-text/25 focus:border-brand-accent/50"
-                        value={componentProps[control.name] || ""}
-                        onChange={(e) =>
-                          setComponentProps({
-                            ...componentProps,
-                            [control.name]: e.target.value,
-                          })
-                        }
-                      />
+                      {control.type === "boolean" ? (
+                        <button
+                          className="w-full rounded-xl border border-brand-border bg-brand-bg/50 px-3 py-2.5 text-sm text-brand-text outline-none transition-colors flex items-center justify-between"
+                          onClick={() =>
+                            setComponentProps({
+                              ...componentProps,
+                              [control.name]: !componentProps[control.name],
+                            })
+                          }
+                        >
+                          <span>
+                            {componentProps[control.name] === true ? "On" : "Off"}
+                          </span>
+                          <span className={`w-6 h-3 rounded-full ${
+                            componentProps[control.name]
+                              ? "bg-brand-accent"
+                              : "bg-brand-border"
+                          }`} />
+                        </button>
+                      ) : control.type === "number" ? (
+                        <input
+                          type="number"
+                          className="w-full rounded-xl border border-brand-border bg-brand-bg/50 px-3 py-2.5 text-sm text-brand-text outline-none transition-colors placeholder:text-brand-text/25 focus:border-brand-accent/50"
+                          value={
+                            componentProps[control.name] === undefined ||
+                            componentProps[control.name] === ""
+                              ? control.default || ""
+                              : componentProps[control.name]
+                          }
+                          onChange={(e) =>
+                            setComponentProps({
+                              ...componentProps,
+                              [control.name]: e.target.value,
+                            })
+                          }
+                        />
+                      ) : control.type === "color" ? (
+                        <input
+                          type="color"
+                          className="w-full rounded-xl border border-brand-border bg-brand-bg/50 px-3 py-2.5 text-sm text-brand-text outline-none transition-colors focus:border-brand-accent/50 h-10 p-0 cursor-pointer"
+                          value={
+                            componentProps[control.name] ||
+                            control.default ||
+                            "#000000"
+                          }
+                          onChange={(e) =>
+                            setComponentProps({
+                              ...componentProps,
+                              [control.name]: e.target.value,
+                            })
+                          }
+                        />
+                      ) : (
+                        <input
+                          className="w-full rounded-xl border border-brand-border bg-brand-bg/50 px-3 py-2.5 text-sm text-brand-text outline-none transition-colors placeholder:text-brand-text/25 focus:border-brand-accent/50"
+                          value={componentProps[control.name] || control.default || ""}
+                          onChange={(e) =>
+                            setComponentProps({
+                              ...componentProps,
+                              [control.name]: e.target.value,
+                            })
+                          }
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -248,6 +302,7 @@ export default function ComponentPage() {
                     <thead className="border-b border-brand-border bg-brand-surface/20 text-[10px] font-semibold uppercase tracking-wider text-brand-text/45">
                       <tr>
                         <th className="px-5 py-3.5">Prop</th>
+                        <th className="px-5 py-3.5">Required</th>
                         <th className="px-5 py-3.5">Type</th>
                         <th className="px-5 py-3.5">Default</th>
                         <th className="px-5 py-3.5">Description</th>
@@ -263,6 +318,16 @@ export default function ComponentPage() {
                           >
                             <td className="px-5 py-3 font-mono text-xs font-medium text-brand-accent">
                               {prop.name}
+                            </td>
+
+                            <td className="px-5 py-3 font-mono text-[10px] uppercase text-brand-text/50">
+                              {prop.required ? (
+                                <span className="bg-brand-accent/10 text-brand-accent border border-brand-accent/20 rounded px-2 py-0.5">
+                                  Required
+                                </span>
+                              ) : (
+                                <span className="text-brand-text/30">Optional</span>
+                              )}
                             </td>
 
                             <td className="px-5 py-3 font-mono text-[10px] uppercase text-brand-text/50">

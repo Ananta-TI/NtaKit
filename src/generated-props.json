@@ -1,70 +1,82 @@
 {
-  "button": [
+  "animated-beam": [
     {
-      "name": "text",
-      "type": "string",
-      "default": "Click Me",
-      "desc": "Teks yang akan ditampilkan di dalam tombol"
-    },
-    {
-      "name": "edgeSensitivity",
+      "name": "curvature",
       "type": "number",
-      "default": "30",
-      "desc": "Sensitivitas deteksi tepi kursor terhadap elemen"
+      "default": "0",
+      "desc": "-"
     },
     {
-      "name": "glowColor",
-      "type": "string",
-      "default": "40 80 80",
-      "desc": "Warna cahaya glow dalam format HSL tanpa koma (contoh: '40 80 80')"
-    },
-    {
-      "name": "backgroundColor",
-      "type": "string",
-      "default": "#120F17",
-      "desc": "Warna latar belakang tombol"
-    },
-    {
-      "name": "borderRadius",
-      "type": "number",
-      "default": "12",
-      "desc": "Radius border tombol dalam pixel"
-    },
-    {
-      "name": "glowRadius",
-      "type": "number",
-      "default": "40",
-      "desc": "Seberapa jauh cahaya glow menyebar keluar"
-    },
-    {
-      "name": "glowIntensity",
-      "type": "number",
-      "default": "0.8",
-      "desc": "Intensitas kecerahan glow"
-    },
-    {
-      "name": "coneSpread",
-      "type": "number",
-      "default": "25",
-      "desc": "Sebaran sudut kerucut cahaya dalam derajat"
-    },
-    {
-      "name": "animated",
+      "name": "reverse",
       "type": "boolean",
       "default": "false",
-      "desc": "Apakah efek sweep animasi berjalan saat pertama kali render"
+      "desc": "-"
     },
     {
-      "name": "colors",
-      "type": "object",
-      "default": "[...]",
-      "desc": "Array warna untuk mesh gradient border"
+      "name": "duration",
+      "type": "any",
+      "default": "Math.random() * 3 + 4",
+      "desc": "-"
     },
     {
-      "name": "fillOpacity",
+      "name": "delay",
       "type": "number",
-      "default": "0.5",
-      "desc": "Transparansi pengisian warna mesh gradient di tepi"
+      "default": "0",
+      "desc": "-"
+    },
+    {
+      "name": "pathColor",
+      "type": "string",
+      "default": "gray",
+      "desc": "-"
+    },
+    {
+      "name": "pathWidth",
+      "type": "number",
+      "default": "3",
+      "desc": "-"
+    },
+    {
+      "name": "pathOpacity",
+      "type": "number",
+      "default": "0.2",
+      "desc": "-"
+    },
+    {
+      "name": "gradientStartColor",
+      "type": "string",
+      "default": "#61DBFB",
+      "desc": "-"
+    },
+    {
+      "name": "gradientStopColor",
+      "type": "string",
+      "default": "#9c40ff",
+      "desc": "-"
+    },
+    {
+      "name": "startXOffset",
+      "type": "number",
+      "default": "0",
+      "desc": "-"
+    },
+    {
+      "name": "startYOffset",
+      "type": "number",
+      "default": "0",
+      "desc": "-"
+    },
+    {
+      "name": "endXOffset",
+      "type": "number",
+      "default": "0",
+      "desc": "-"
+    },
+    {
+      "name": "endYOffset",
+      "type": "number",
+      "default": "0",
+      "desc": "-"
     }
   ],
   "contact-form": [
@@ -72,49 +84,49 @@
       "name": "title",
       "type": "string",
       "default": "Get in Touch",
-      "desc": "Judul yang ditampilkan di atas form. Isi string kosong untuk menyembunyikan judul."
+      "desc": "Title displayed above the form. Leave empty string to hide title."
     },
     {
       "name": "successMessage",
       "type": "string",
       "default": "Message sent successfully.",
-      "desc": "Pesan yang ditampilkan saat form berhasil dikirim."
+      "desc": "Message displayed when form is successfully sent."
     },
     {
       "name": "errorMessage",
       "type": "string",
       "default": "Something went wrong. Please try again.",
-      "desc": "Pesan yang ditampilkan saat proses submit gagal atau onSubmit menghasilkan error."
+      "desc": "Message displayed when submission fails or onSubmit produces an error."
     },
     {
       "name": "buttonText",
       "type": "string",
       "default": "Send Message",
-      "desc": "Teks yang ditampilkan pada tombol submit saat form dalam keadaan idle."
+      "desc": "Text displayed on the submit button when form is idle."
     },
     {
       "name": "loadingText",
       "type": "string",
       "default": "Sending...",
-      "desc": "Teks yang ditampilkan pada tombol submit saat form sedang mengirim data."
+      "desc": "Text displayed on the submit button while form is sending data."
     },
     {
       "name": "successDuration",
       "type": "number",
       "default": "5000",
-      "desc": "Durasi pesan sukses ditampilkan sebelum hilang otomatis dalam satuan milidetik."
+      "desc": "Duration success message is displayed before automatically disappearing in milliseconds."
     },
     {
       "name": "compact",
       "type": "boolean",
       "default": "false",
-      "desc": "Mengaktifkan layout lebih kecil untuk preview, modal, card, atau container sempit."
+      "desc": "Enables smaller layout for preview, modal, card, or narrow container."
     },
     {
       "name": "className",
       "type": "string",
       "default": "",
-      "desc": "Class tambahan untuk mengubah atau menambah styling wrapper utama."
+      "desc": "Additional class to change or add styling to the main wrapper."
     }
   ],
   "github-isometric": [
@@ -125,24 +137,186 @@
       "desc": "GitHub username to fetch and visualize contributions for"
     }
   ],
+  "kinetic-grid": [
+    {
+      "name": "isDarkMode",
+      "type": "boolean",
+      "default": "true",
+      "desc": "Enable dark mode (true) or light mode (false) for grid and node colors"
+    },
+    {
+      "name": "className",
+      "type": "string",
+      "default": "",
+      "desc": "Additional class for styling the wrapper container"
+    },
+    {
+      "name": "cellSize",
+      "type": "number",
+      "default": "95",
+      "desc": "Grid cell size in pixels"
+    },
+    {
+      "name": "influenceRadius",
+      "type": "number",
+      "default": "280",
+      "desc": "Mouse influence radius in pixels"
+    },
+    {
+      "name": "visibilityRadius",
+      "type": "number",
+      "default": "340",
+      "desc": "Visual radius for grid visibility fade"
+    },
+    {
+      "name": "hoverWarp",
+      "type": "number",
+      "default": "25",
+      "desc": "Warp amount on hover"
+    },
+    {
+      "name": "clickWarp",
+      "type": "number",
+      "default": "28",
+      "desc": "Warp amount on clickpress"
+    },
+    {
+      "name": "dotSpacing",
+      "type": "number",
+      "default": "58",
+      "desc": "Background dots spacing in pixels"
+    },
+    {
+      "name": "cursorLerp",
+      "type": "number",
+      "default": "1",
+      "desc": "Cursor follow speed (1 = instant)"
+    },
+    {
+      "name": "pressLerpIn",
+      "type": "number",
+      "default": "0.09",
+      "desc": "Press ease-in speed"
+    },
+    {
+      "name": "pressLerpOut",
+      "type": "number",
+      "default": "0.09",
+      "desc": "Press ease-out speed"
+    },
+    {
+      "name": "outsideGridOpacity",
+      "type": "number",
+      "default": "0.018",
+      "desc": "Grid line opacity outside mouse radius"
+    },
+    {
+      "name": "outsideNodeOpacity",
+      "type": "number",
+      "default": "0.025",
+      "desc": "Node opacity outside mouse radius"
+    },
+    {
+      "name": "outsideDotOpacity",
+      "type": "number",
+      "default": "0.01",
+      "desc": "Dot texture opacity outside mouse radius"
+    },
+    {
+      "name": "nodeBaseRadius",
+      "type": "number",
+      "default": "1.5",
+      "desc": "Base node radius in pixels"
+    },
+    {
+      "name": "nodeActiveRadius",
+      "type": "number",
+      "default": "3.2",
+      "desc": "Active node radius in pixels"
+    }
+  ],
+  "magnet": [
+    {
+      "name": "padding",
+      "type": "number",
+      "default": "100",
+      "desc": "-"
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "default": "false",
+      "desc": "-"
+    },
+    {
+      "name": "magnetStrength",
+      "type": "number",
+      "default": "2",
+      "desc": "-"
+    },
+    {
+      "name": "exclusive",
+      "type": "boolean",
+      "default": "true",
+      "desc": "-"
+    },
+    {
+      "name": "axis",
+      "type": "string",
+      "default": "both",
+      "desc": "-"
+    },
+    {
+      "name": "tilt",
+      "type": "number",
+      "default": "0",
+      "desc": "-"
+    },
+    {
+      "name": "scale",
+      "type": "number",
+      "default": "1",
+      "desc": "-"
+    },
+    {
+      "name": "wrapperClassName",
+      "type": "string",
+      "default": "",
+      "desc": "-"
+    },
+    {
+      "name": "innerClassName",
+      "type": "string",
+      "default": "",
+      "desc": "-"
+    }
+  ],
   "spotlight-grid": [
     {
       "name": "items",
       "type": "object",
       "default": "[...]",
-      "desc": "Array berisi data untuk masing-masing card"
+      "desc": "Array containing data for each card"
     },
     {
       "name": "spotlightColor",
       "type": "string",
       "default": "rgba(57, 211, 83, 0.25)",
-      "desc": "Warna cahaya senter (Gunakan format rgba agar halus)"
+      "desc": "Spotlight color (use rgba format for smooth effect)"
     },
     {
       "name": "spotlightSize",
       "type": "number",
       "default": "350",
-      "desc": "Seberapa besar sebaran cahaya (dalam pixel)"
+      "desc": "Size of light spread (in pixels)"
+    }
+  ],
+  "submit-button": [
+    {
+      "name": "loading",
+      "type": "boolean",
+      "default": "false",
+      "desc": "When true, button is disabled and displays 'Sending' text"
     }
   ]
 }

@@ -11,7 +11,7 @@ const outputFile = path.resolve(__dirname, '../src/generated-props.json');
 
 const registryProps = {};
 
-// 1. Membersihkan Default Value (Agar tidak ada kutip ganda di angka/objek)
+// 1. Clean Default Value (So no double quotes in numbers/objects)
 const formatDefaultValue = (val) => {
   if (!val || val === '--') return '--';
   let clean = val.replace(/\s+/g, ' ').trim();
@@ -20,16 +20,16 @@ const formatDefaultValue = (val) => {
     if (clean.startsWith('[')) return '[...]';
     if (clean.startsWith('{')) return '{...}';
   }
-  // Hanya hapus kutip jika itu string sederhana
+  // Only remove quotes if it's a simple string
   return clean.replace(/^['"`]|['"`]$/g, '');
 };
 
-// 2. Membersihkan Deskripsi (Hapus sampah "export default" dan duplikasi)
+// 2. Clean Description (Remove "export default" trash and duplicates)
 const formatDescription = (desc, propName) => {
   if (!desc || desc === '-') return '-';
 
-  // Hapus baris yang mengandung 'export default' atau nama fungsi
-  // Ini biasanya "sampah" yang ikut terbawa react-docgen
+  // Remove lines containing 'export default' or function name
+  // This is usually "trash" carried by react-docgen
   let lines = desc.split('\n');
   let cleanLines = lines.filter(line => {
     const l = line.toLowerCase();
@@ -37,12 +37,12 @@ const formatDescription = (desc, propName) => {
   });
 
   let clean = cleanLines.join(' ')
-    .replace(/\*/g, '')      // Hapus bintang JSDoc
-    .replace(/\//g, '')      // Hapus slash
-    .replace(/\s+/g, ' ')    // Rapikan spasi
+    .replace(/\*/g, '')      // Remove JSDoc asterisks
+    .replace(/\//g, '')      // Remove slashes
+    .replace(/\s+/g, ' ')    // Tidy up spaces
     .trim();
 
-  // Jika setelah dibersihkan malah jadi kosong, kasih strip
+  // If cleaned result is empty, give dash
   return clean || '-';
 };
 
@@ -60,7 +60,7 @@ files.forEach(file => {
       const propsTable = Object.entries(comp.props).map(([name, propData]) => {
         const rawDefault = propData.defaultValue?.value || '--';
         
-        // Deteksi Tipe
+        // Detect Type
         let type = propData.type?.name || 'any';
         if (type === 'any') {
             if (rawDefault === 'true' || rawDefault === 'false') type = 'boolean';
@@ -69,10 +69,10 @@ files.forEach(file => {
             else if (rawDefault.startsWith('{') || rawDefault.startsWith('[')) type = 'object';
         }
 
-        // AMBIL DESKRIPSI (Gunakan data dari parser, baru fallback ke regex sempit)
+        // GET DESCRIPTION (Use parser data first, then fallback to narrow regex)
         let desc = propData.description;
         if (!desc) {
-          // Regex ini mencari JSDoc yang "paling dekat" (tidak boleh ada /** lain di antaranya)
+          // This regex finds the "closest" JSDoc (no other /** in between)
           const strictRegex = new RegExp(`\\/\\*\\*([^\\*]*(?:\\*(?!\\/)[^\\*]*)*)\\*\\/\\s*(?:\r?\n\\s*)*${name}\\b`);
           const match = sourceCode.match(strictRegex);
           desc = match ? match[1] : '-';

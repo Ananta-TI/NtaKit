@@ -23,11 +23,37 @@ const spotlightItems = [
   },
 ];
 
-export default function SpotlightGridDemo({ preview = false }) {
+export default function SpotlightGridDemo({
+  preview = false,
+  items,
+  spotlightColor,
+  spotlightSize,
+}) {
   const containerRef = useRef(null);
 
   const themeCtx = useContext(ThemeContext);
   const isDarkMode = themeCtx?.isDarkMode ?? true;
+
+  const effectiveItems = items || [
+    {
+      title: "Web Development",
+    desc: "React.js, Laravel, Node.js & Tailwind CSS. Always looking for the most efficient way for quality results.",
+      spotlightColor: "rgba(57, 211, 83, 0.25)",
+      spotlightSize: 360,
+    },
+    {
+      title: "Cyber Operations",
+    desc: "Bug bounty hunting, reverse engineering, and OSINT tracking architecture.",
+      spotlightColor: "rgba(168, 85, 247, 0.25)",
+      spotlightSize: 340,
+    },
+    {
+      title: "Digital Artworks",
+    desc: "Wildstyle graffiti sketching, typography exploration, and character design.",
+      spotlightColor: "rgba(251, 191, 36, 0.25)",
+      spotlightSize: 320,
+    },
+  ];
 
   const handlePointerMove = (e) => {
     if (!containerRef.current) return;
@@ -95,51 +121,55 @@ export default function SpotlightGridDemo({ preview = false }) {
         onPointerMove={handlePointerMove}
         className={gridClass}
       >
-        {spotlightItems.map((item, index) => (
-          <motion.div
-            key={item.title}
-            initial={{ opacity: 0, y: preview ? 10 : 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: index * 0.08 }}
-            className={`
-              ${cardClass}
-              ${isDarkMode ? "bg-brand-border/70" : "bg-brand-border"}
-            `}
-          >
-            <div
-              className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-              style={{
-                background: `radial-gradient(${
-                  preview ? item.spotlightSize * 0.75 : item.spotlightSize
-                }px circle at var(--mouse-x) var(--mouse-y), ${
-                  item.spotlightColor
-                }, transparent 42%)`,
-              }}
-            />
-
-            <div className={cardInnerClass}>
+        {effectiveItems.map((item, index) => {
+          const itemColor = item.spotlightColor || spotlightColor || "rgba(57, 211, 83, 0.25)";
+          const itemSize = item.spotlightSize || spotlightSize || 350;
+          return (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: preview ? 10 : 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: index * 0.08 }}
+              className={`
+                ${cardClass}
+                ${isDarkMode ? "bg-brand-border/70" : "bg-brand-border"}
+              `}
+            >
               <div
                 className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                 style={{
                   background: `radial-gradient(${
-                    preview ? item.spotlightSize * 0.75 : item.spotlightSize
-                  }px circle at var(--mouse-x) var(--mouse-y), ${item.spotlightColor.replace(
-                    "0.25",
-                    "0.06"
-                  )}, transparent 42%)`,
+                    preview ? itemSize * 0.75 : itemSize
+                  }px circle at var(--mouse-x) var(--mouse-y), ${
+                    itemColor
+                  }, transparent 42%)`,
                 }}
               />
 
-              <div className={iconClass}>0{index + 1}</div>
+              <div className={cardInnerClass}>
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                  style={{
+                    background: `radial-gradient(${
+                      preview ? itemSize * 0.75 : itemSize
+                    }px circle at var(--mouse-x) var(--mouse-y), ${itemColor.replace(
+                      "0.25",
+                      "0.06"
+                    )}, transparent 42%)`,
+                  }}
+                />
 
-              <div className="relative z-10 flex flex-1 flex-col">
-                <h3 className={cardTitleClass}>{item.title}</h3>
+                <div className={iconClass}>0{index + 1}</div>
 
-                <p className={descClass}>{item.desc}</p>
+                <div className="relative z-10 flex flex-1 flex-col">
+                  <h3 className={cardTitleClass}>{item.title}</h3>
+
+                  <p className={descClass}>{item.desc}</p>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );

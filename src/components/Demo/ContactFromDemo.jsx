@@ -33,6 +33,8 @@ export default function ContactForm({
   title = "Get in Touch",
   successMessage = "Message sent successfully.",
   preview = false,
+  buttonText = "Send Message",
+  compact = false,
 }) {
   const themeCtx = useContext(ThemeContext);
   const isDarkMode = themeCtx?.isDarkMode ?? true;
@@ -116,11 +118,15 @@ export default function ContactForm({
 
   const rootClass = preview
     ? "flex h-full w-full items-center justify-center bg-transparent px-2 py-2"
-    : "flex min-h-[460px] w-full items-center justify-center bg-transparent px-4 py-8 sm:px-6 sm:py-10";
+    : compact
+      ? "flex h-full w-full items-center justify-center bg-transparent px-4 py-4 sm:px-6 sm:py-6"
+      : "flex min-h-[460px] w-full items-center justify-center bg-transparent px-4 py-8 sm:px-6 sm:py-10";
 
   const cardClass = preview
     ? "w-full max-w-xl rounded-2xl border p-4 shadow-xl transition-colors duration-300 sm:p-5"
-    : "w-full max-w-2xl rounded-3xl border p-5 shadow-xl transition-colors duration-300 sm:p-8 md:p-10";
+    : compact
+      ? "w-full max-w-xl rounded-2xl border p-6 shadow-xl transition-colors duration-300 sm:p-8"
+      : "w-full max-w-2xl rounded-3xl border p-5 shadow-xl transition-colors duration-300 sm:p-8 md:p-10";
 
   const titleClass = preview
     ? "text-[clamp(1.6rem,4vw,2.4rem)] font-semibold leading-[0.98] tracking-[-0.045em] text-brand-text"
@@ -219,7 +225,7 @@ export default function ContactForm({
               ) : (
                 <>
                   <Mail size={18} />
-                  Send Message
+                  {buttonText}
                 </>
               )}
             </button>

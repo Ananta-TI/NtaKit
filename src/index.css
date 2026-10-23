@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "TriverDemo Bold";
+  src: url("/TriverDemo-Bold.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* 1. Reset & Global Transition */
 * {
   /* Hapus transition dari * agar tidak lag, fokus ke property tertentu saja */

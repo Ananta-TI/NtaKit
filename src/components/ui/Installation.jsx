@@ -109,9 +109,9 @@ export default function App() {
               isDarkMode ? "text-brand-text/60" : "text-[#2C3639]/65"
             }`}
           >
-            Install dependency utama, register komponen, lalu mulai pakai.
-            Karena umat frontend modern tampaknya tidak bisa hidup tanpa 14
-            library animasi dan sedikit trauma konfigurasi.
+            Install main dependency, register components, then start using.
+            Because modern frontend folks apparently can't live without 14
+            animation libraries and a little configuration trauma.
           </p>
         </motion.div>
 
@@ -140,7 +140,7 @@ export default function App() {
                   isDarkMode ? "text-brand-text/60" : "text-[#2C3639]/60"
                 }`}
               >
-                Install package utama yang dipakai hampir seluruh komponen.
+                Install main package used by almost all components.
               </p>
 
               <CodeBlock code={npmInstall} />
@@ -152,7 +152,7 @@ export default function App() {
                   isDarkMode ? "text-brand-text/60" : "text-[#2C3639]/60"
                 }`}
               >
-                Kalau belum setup Tailwind v4:
+                If you haven't set up Tailwind v4 yet:
               </p>
 
               <CodeBlock code={tailwindInstall} />
@@ -183,8 +183,8 @@ export default function App() {
               isDarkMode ? "text-brand-text/60" : "text-[#2C3639]/60"
             }`}
           >
-            Tambahkan komponen ke registry supaya otomatis muncul di sidebar.
-            Sedikit seperti membuat altar kecil untuk dependency baru.
+            Add components to registry so they automatically appear in the sidebar.
+            A bit like making a small altar for new dependencies.
           </p>
 
           <CodeBlock code={registryExample} />
@@ -213,7 +213,7 @@ export default function App() {
               isDarkMode ? "text-brand-text/60" : "text-[#2C3639]/60"
             }`}
           >
-            Import dan gunakan seperti komponen React biasa. Tidak perlu ritual tambahan. Untuk sekarang.
+            Import and use like regular React components. No additional rituals needed. For now.
           </p>
 
           <CodeBlock code={importExample} />
@@ -244,8 +244,9 @@ export default function App() {
                   isDarkMode ? "text-brand-text/60" : "text-[#2C3639]/60"
                 }`}
               >
-                Semua komponen di NtaKit dirancang untuk environment React modern.
-                Bisa dipakai di Vite, Next.js, atau project yang hidupnya sudah cukup rumit tanpa webpack error tambahan.
+                All components in NtaKit are designed for modern React environment.
+                Can be used in Vite, Next.js, or projects whose life is already
+                complicated enough without additional webpack errors.
               </p>
             </div>
 

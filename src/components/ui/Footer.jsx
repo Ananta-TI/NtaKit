@@ -129,10 +129,10 @@ export default function Footer() {
 
             {/* DESC */}
             <p className={`max-w-md text-sm leading-relaxed ${mutedText}`}>
-              Eksperimen frontend modern berbasis React, animasi presisi,
-              micro-interaction premium, dan design system modular.
-              Karena sekarang bahkan tombol submit perlu simulasi gravitasi
-              kecil supaya manusia merasa masa depannya terkendali.
+              Modern frontend experiment based on React, precise animation,
+              premium micro-interaction, and modular design system.
+              Because nowadays even a submit button needs gravity simulation
+              so humans feel their future is under control.
             </p>
           </div>
 

@@ -2,30 +2,30 @@ import React, { useRef } from "react";
 import { motion } from "framer-motion";
 
 /**
- * Komponen Grid interaktif dengan efek "Spotlight" ala Linear.
- * Cahaya akan mengikuti kursor dan menerangi border serta background.
+ * Interactive Grid component with "Spotlight" effect like Linear.
+ * Light follows cursor and illuminates border and background.
  */
 export default function NtaSpotlightGrid({
-  /** Array berisi data untuk masing-masing card */
+  /** Array containing data for each card */
   items = [
     { 
       title: "Web Development", 
-      desc: "React.js, Laravel, Node.js & Tailwind CSS. Selalu mencari cara paling efisien untuk hasil berkualitas." 
+      desc: "React.js, Laravel, Node.js & Tailwind CSS. Always looking for the most efficient way for quality results." 
     },
     { 
       title: "Cyber Operations", 
-      desc: "Bug bounty hunting, reverse engineering, dan OSINT tracking architecture." 
+      desc: "Bug bounty hunting, reverse engineering, and OSINT tracking architecture." 
     },
     { 
       title: "Digital Artworks", 
-      desc: "Wildstyle graffiti sketching, typography exploration, dan character design." 
+      desc: "Wildstyle graffiti sketching, typography exploration, and character design." 
     }
   ],
   
-  /** Warna cahaya senter (Gunakan format rgba agar halus) */
+  /** Spotlight color (use rgba format for smooth effect) */
   spotlightColor = "rgba(57, 211, 83, 0.25)",
   
-  /** Seberapa besar sebaran cahaya (dalam pixel) */
+  /** Size of light spread (in pixels) */
   spotlightSize = 350
 }) {
   const containerRef = useRef(null);
@@ -33,16 +33,16 @@ export default function NtaSpotlightGrid({
   const handleMouseMove = (e) => {
     if (!containerRef.current) return;
     
-    // Ambil semua card yang ada di dalam container
+    // Get all cards inside the container
     const cards = containerRef.current.querySelectorAll('.spotlight-card');
     
     for (const card of cards) {
       const rect = card.getBoundingClientRect();
-      // Hitung posisi kursor relatif terhadap masing-masing card
+      // Calculate cursor position relative to each card
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       
-      // Update variabel CSS native agar performa 60fps (tidak memicu re-render React)
+      // Update native CSS variables for 60fps performance (doesn't trigger React re-render)
       card.style.setProperty('--mouse-x', `${x}px`);
       card.style.setProperty('--mouse-y', `${y}px`);
     }
@@ -65,7 +65,7 @@ export default function NtaSpotlightGrid({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: idx * 0.1 }}
             key={idx}
-            // Class 'spotlight-card' penting untuk querySelector
+            // Class 'spotlight-card' is important for querySelector
             className="spotlight-card relative h-full rounded-24px p-1px overflow-hidden bg-zinc-800/30"
           >
             {/* --- EFEK SPOTLIGHT BORDER --- */}
@@ -76,11 +76,11 @@ export default function NtaSpotlightGrid({
               }}
             />
 
-            {/* --- KONTEN CARD UTAMA --- */}
-            {/* Background solid agar spotlight border hanya terlihat di celah p-[1px] */}
+            {/* --- MAIN CONTENT --- */}
+            {/* Background solid so spotlight border is only visible in the p-[1px] gap */}
             <div className="relative h-full bg-[#0d1117]/95 backdrop-blur-xl rounded-[23px] p-8 flex flex-col gap-4 overflow-hidden">
               
-              {/* --- EFEK SPOTLIGHT BACKGROUND (Cahaya masuk ke dalam card) --- */}
+              {/* --- SPOTLIGHT BACKGROUND EFFECT (Light enters card) --- */}
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                 style={{

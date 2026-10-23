@@ -32,35 +32,35 @@ function ContactFormLine({ inputId, hasError }) {
 ========================= */
 
 /**
- * Komponen Form Kontak interaktif dengan animasi GSAP,
- * validasi form, loading state, success feedback, dan error handling.
+ * Interactive Contact Form component with GSAP animation,
+ * form validation, loading state, success feedback, and error handling.
  */
 export default function ContactForm({
-  /** Handler async/sync untuk menangani submit form. Menerima data name, email, subject, message. */
+  /** Async/sync handler to handle form submission. Receives name, email, subject, message data. */
   onSubmit,
 
-  /** Judul yang ditampilkan di atas form. Isi string kosong untuk menyembunyikan judul. */
+  /** Title displayed above the form. Leave empty string to hide title. */
   title = "Get in Touch",
 
-  /** Pesan yang ditampilkan saat form berhasil dikirim. */
+  /** Message displayed when form is successfully sent. */
   successMessage = "Message sent successfully.",
 
-  /** Pesan yang ditampilkan saat proses submit gagal atau onSubmit menghasilkan error. */
+  /** Message displayed when submission fails or onSubmit produces an error. */
   errorMessage = "Something went wrong. Please try again.",
 
-  /** Teks yang ditampilkan pada tombol submit saat form dalam keadaan idle. */
+  /** Text displayed on the submit button when form is idle. */
   buttonText = "Send Message",
 
-  /** Teks yang ditampilkan pada tombol submit saat form sedang mengirim data. */
+  /** Text displayed on the submit button while form is sending data. */
   loadingText = "Sending...",
 
-  /** Durasi pesan sukses ditampilkan sebelum hilang otomatis dalam satuan milidetik. */
+  /** Duration success message is displayed before automatically disappearing in milliseconds. */
   successDuration = 5000,
 
-  /** Mengaktifkan layout lebih kecil untuk preview, modal, card, atau container sempit. */
+  /** Enables smaller layout for preview, modal, card, or narrow container. */
   compact = false,
 
-  /** Class tambahan untuk mengubah atau menambah styling wrapper utama. */
+  /** Additional class to change or add styling to the main wrapper. */
   className = "",
 }) {
   const rootRef = useRef(null);
